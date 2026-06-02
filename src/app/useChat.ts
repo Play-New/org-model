@@ -60,17 +60,18 @@ export interface ChatState {
 }
 
 const KICKOFF =
-  'Session start — the user just opened the app and has not written anything yet. ' +
-  'First call read_model. Then open the conversation, in the user’s language, in a few plain, ' +
-  'concrete sentences (short paragraphs, no markdown headings, no slogans): ' +
-  '(1) introduce yourself in one line — what you do; ' +
-  '(2) in one or two sentences say what an organization is here: the promises it keeps to the world, ' +
-  'plus the parts inside that keep them. Then name the two things you will write down with them — ' +
-  'contracts (what it gives each outside party, and what it gets back) and nodes (core delivers a ' +
-  'promise, service serves the core, platform keeps the whole thing standing); ' +
-  '(3) say you work from their documents first and ask only where the documents are silent; ' +
-  '(4) ask your first question and invite the most useful documents (site, statute, a deck, a client ' +
-  'contract, the latest numbers). Keep it short and human. No write tools in this first turn.';
+  'Session start — the user just opened a chat and has not written yet. First call read_model, then ' +
+  'open in the user’s language, plain and short (no markdown headings, no slogans), ADAPTING to what ' +
+  'the model already contains:\n' +
+  '- If the model is EMPTY (no contracts and no nodes): introduce yourself in ONE line (what you do), ' +
+  'name in one line the two things you build together — contracts and nodes — say you work from their ' +
+  'documents first, and ask for the most useful ones (statute, latest financials, a "how we are funded" ' +
+  'page, a deck). A few sentences, no lecture on what an organization is.\n' +
+  '- If the model ALREADY has content: do NOT introduce yourself and do NOT explain what an organization ' +
+  'is — the user has seen it. Just greet in one short line, say where things stand (how many contracts / ' +
+  'nodes, what is still missing or unconfirmed), and ask the single most useful next question or propose ' +
+  'the next step.\n' +
+  'No write tools in this first turn.';
 
 export function useChat(adapter: StorageAdapter, config: AppConfig, onModelChanged: () => void): ChatState {
   const [messages, setMessages] = useState<ChatMessage[]>([]);

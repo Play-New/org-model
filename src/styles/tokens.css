@@ -118,17 +118,22 @@
    Brand surfaces stay monochrome; these only differentiate data.
    ========================================================================== */
 :root {
-  /* DATA-VIZ PASTELS (muted, editorial) */
-  --ds-sage:  #7E9B84;
-  --ds-lilac: #9A8FB2;
-  --ds-slate: #7C8AA3;
-  --ds-sand:  #C3A26E;
-  --ds-coral: #CC8B79;
+  /* DATA-VIZ PALETTE — delicate constellation (rose · periwinkle · violet), on white.
+     Used only to differentiate data; brand surfaces stay monochrome. */
+  --ds-rose:   #D98C97;
+  --ds-peri:   #8FA3D9;
+  --ds-violet: #B095CC;
+  --ds-sage:   #86A89A; /* green — kept for "done / healthy" */
+  --ds-sand:   #C9A36B; /* amber — kept for "partial / strained" */
+  --ds-coral:  #CC7A7A; /* red — kept for "broken" */
+  /* aliases (older references) */
+  --ds-lilac: var(--ds-violet);
+  --ds-slate: var(--ds-peri);
 
-  /* NODE ORIENTATION (Cicero) */
-  --ori-core:     var(--ds-slate);
-  --ori-service:  var(--ds-sage);
-  --ori-platform: var(--ds-sand);
+  /* NODE ORIENTATION (Cicero) — the constellation hues */
+  --ori-core:     var(--ds-rose);
+  --ori-service:  var(--ds-peri);
+  --ori-platform: var(--ds-violet);
 
   /* FILL STATE — the file-tree dots */
   --state-empty:   var(--fg-faint);

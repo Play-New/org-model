@@ -260,7 +260,7 @@ input, select, textarea { font: inherit; color: inherit; }
   transition: background var(--dur-fast) var(--ease-out);
 }
 .org__item:hover { background: var(--bg-muted); }
-.org__item.is-selected { background: var(--bg-muted); font-weight: var(--w-medium); box-shadow: inset 2px 0 0 var(--fg); }
+.org__item.is-selected { background: var(--bg-muted); font-weight: var(--w-medium); }
 .org__label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .org__empty { color: var(--fg-faint); font-size: var(--t-xs); padding: 0 var(--sp-2) var(--sp-1); font-style: italic; }
 
