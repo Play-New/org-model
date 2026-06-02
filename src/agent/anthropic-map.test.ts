@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fromApiContent, toApiMessages, toApiTools } from './anthropic-map';
+import { fromApiContent, toApiMessages, toApiTools, usesFiles } from './anthropic-map';
 import type { Message, ToolDef } from './types';
 
 describe('anthropic mapping', () => {
@@ -47,6 +47,15 @@ describe('anthropic mapping', () => {
       { role: 'assistant', content: [{ type: 'tool_use', id: 'x', name: 'write_contract', input: { id: 'c' } }] },
     ];
     expect(toApiMessages(msgs)[0].content[0]).toEqual({ type: 'tool_use', id: 'x', name: 'write_contract', input: { id: 'c' } });
+  });
+
+  it('flags Files-API usage only when a document carries a fileId', () => {
+    const withFile: Message[] = [{ role: 'user', content: [{ type: 'document', fileId: 'file_x' }] }];
+    const withBase64: Message[] = [{ role: 'user', content: [{ type: 'document', mediaType: 'application/pdf', dataBase64: 'AA' }] }];
+    const plain: Message[] = [{ role: 'user', content: [{ type: 'text', text: 'hi' }] }];
+    expect(usesFiles(withFile)).toBe(true);
+    expect(usesFiles(withBase64)).toBe(false);
+    expect(usesFiles(plain)).toBe(false);
   });
 
   it('appends the web_search server tool when enabled', () => {

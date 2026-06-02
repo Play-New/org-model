@@ -88,6 +88,14 @@ export function toApiTools(tools: ToolDef[], webSearch = false): ApiTool[] {
   return out;
 }
 
+/** True if any user message carries a Files-API document reference (a `fileId`).
+ *  The provider sends the files beta header only on these calls, never on plain ones. */
+export function usesFiles(messages: Message[]): boolean {
+  return messages.some(
+    m => m.role === 'user' && m.content.some(b => b.type === 'document' && !!b.fileId),
+  );
+}
+
 /** Keep only the blocks our loop acts on: text and client tool_use. */
 export function fromApiContent(content: Array<Record<string, unknown>>): AssistantBlock[] {
   const out: AssistantBlock[] = [];

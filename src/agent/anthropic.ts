@@ -8,7 +8,7 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import type { ModelChoice } from '../config/config';
-import { fromApiContent, toApiMessages, toApiTools } from './anthropic-map';
+import { fromApiContent, toApiMessages, toApiTools, usesFiles } from './anthropic-map';
 import type { LlmProvider, ProviderRequest, ProviderTurn } from './types';
 
 // The current latest Opus and Sonnet. From the Claude 4.6 generation on, the
@@ -22,13 +22,6 @@ const SONNET = 'claude-sonnet-4-6';
 // limit, so large PDFs go through. The beta is sent only on the calls that use it.
 const FILES_BETA = 'files-api-2025-04-14';
 const filesOpts = { headers: { 'anthropic-beta': FILES_BETA } };
-
-/** True if any user message carries a Files-API document reference. */
-function usesFiles(messages: ProviderRequest['messages']): boolean {
-  return messages.some(
-    m => m.role === 'user' && m.content.some(b => b.type === 'document' && !!(b as { fileId?: string }).fileId),
-  );
-}
 
 export function modelId(choice: ModelChoice): string {
   return choice === 'opus' ? OPUS : SONNET;

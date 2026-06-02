@@ -33,7 +33,7 @@ the only network calls are the ones the agent makes to Anthropic on your behalf.
 
 ## Verify
 
-- `pnpm test` — unit + engine-level end-to-end with a mocked LLM (85 tests)
+- `pnpm test` — unit + engine-level end-to-end with a mocked LLM (92 tests)
 - `pnpm lint`
 - `pnpm build` — static bundle + PWA (manifest + service worker), code-split
 
@@ -50,10 +50,21 @@ REST API (a repo, read + write). LLM via the Anthropic SDK in the browser (BYOK,
 proxy; key encrypted at rest), with the web-search tool and vision. react-flow for
 the map. Installable as a PWA.
 
+## The language
+
+The agent does not invent a framework per company. It applies **one shared, public
+language** for describing any organization — contracts and nodes — and contextualizes
+it from your documents. That language is specified, open and citeable, in
+**[LANGUAGE.md](LANGUAGE.md)** (built on Simone Cicero / Boundaryless and Promise
+Theory). The system is two things: **the model** (this language applied to your org)
+and **the capabilities** that act on it — mapping today, analysis next.
+
 ## Docs
 
-- **CLAUDE.md** — resume handoff: current state, the hard rules, open follow-ups.
+- **[LANGUAGE.md](LANGUAGE.md)** — the open spec of the language the agent applies: what an organization is (contracts + nodes), and the agent as the bridge to it.
+- **[ANALYSIS.md](ANALYSIS.md)** — design of the next capability: reading commoditization → AI-native over the map (Wardley + Choudary). *Status: design.*
 - **AGENT-SPEC.md** — the model (contracts + nodes) and how the agent reasons.
 - **APP-SPEC.md** — the UI surface.
 - **ARCHITECTURE.md** — storage (local + GitHub), security, sync.
+- **CLAUDE.md** — resume handoff: current state, the hard rules, open follow-ups.
 - **BUILD-LOG.md** — what's built, in order.
