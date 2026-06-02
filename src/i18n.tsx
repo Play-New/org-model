@@ -332,12 +332,12 @@ export const STRINGS: Record<string, Entry> = {
     'A Anthropic está sobrecarregada agora — tente novamente em breve.',
   ),
   'err.network': S(
-    'Couldn’t reach Anthropic. Check your connection and try again.',
-    'Impossibile raggiungere Anthropic. Controlla la connessione e riprova.',
-    'No se pudo contactar con Anthropic. Revisa tu conexión e inténtalo de nuevo.',
-    'Impossible de joindre Anthropic. Vérifiez votre connexion et réessayez.',
-    'Anthropic konnte nicht erreicht werden. Prüfe deine Verbindung und versuche es erneut.',
-    'Não foi possível contactar a Anthropic. Verifique a ligação e tente novamente.',
+    'Couldn’t reach Anthropic. Check your connection — and if you attached a large PDF or image, it may be too big: try a smaller file or paste the text.',
+    'Impossibile raggiungere Anthropic. Controlla la connessione — e se hai allegato un PDF o un’immagine pesante, potrebbe essere troppo grande: prova un file più piccolo o incolla il testo.',
+    'No se pudo contactar con Anthropic. Revisa tu conexión — y si adjuntaste un PDF o una imagen grande, puede ser demasiado: prueba un archivo más pequeño o pega el texto.',
+    'Impossible de joindre Anthropic. Vérifiez votre connexion — et si vous avez joint un PDF ou une image volumineux, c’est peut-être trop lourd : essayez un fichier plus petit ou collez le texte.',
+    'Anthropic konnte nicht erreicht werden. Prüfe deine Verbindung — und falls du ein großes PDF oder Bild angehängt hast, ist es vielleicht zu groß: nimm eine kleinere Datei oder füge den Text ein.',
+    'Não foi possível contactar a Anthropic. Verifique a ligação — e se anexou um PDF ou imagem grande, pode ser demasiado: tente um ficheiro mais pequeno ou cole o texto.',
   ),
   'err.generic': S(
     'Something went wrong. Try again.',

@@ -13,6 +13,6 @@ export function humanizeError(e: unknown, t: Translate): string {
   if (status === 401 || /\b401\b|authentication|invalid.*api.?key/i.test(msg)) return t('err.keyRejected');
   if (status === 429 || /\b429\b|rate.?limit/i.test(msg)) return t('err.rateLimited');
   if (status === 529 || /\b529\b|overloaded/i.test(msg)) return t('err.overloaded');
-  if (/failed to fetch|networkerror|network error|load failed/i.test(msg)) return t('err.network');
+  if (/failed to fetch|networkerror|network error|load failed|connection error/i.test(msg)) return t('err.network');
   return msg || t('err.generic');
 }

@@ -63,6 +63,10 @@ export function ChatPane({ chat }: { chat: ChatState }) {
     const docsPdf: { name: string; mediaType: string; dataBase64: string }[] = [];
     const skip: string[] = [];
     for (const f of files) {
+      if (f.size > 15 * 1024 * 1024) {
+        skip.push(`${f.name} (>15MB)`); // oversized: would blow the request limit and fail
+        continue;
+      }
       const kind = classifyAttachment(f.name, f.type);
       if (kind === 'image') {
         const b = await fileToImageBlock(f);

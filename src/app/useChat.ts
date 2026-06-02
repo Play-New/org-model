@@ -146,6 +146,7 @@ export function useChat(adapter: StorageAdapter, config: AppConfig, onModelChang
         const cur = thread.current;
         if (cur) thread.current = { ...cur, protocol: res.messages };
       } catch (e) {
+        console.error('[org] agent error:', e); // the real cause, for diagnosis in DevTools
         const lang = isLang(config.chatLanguage) ? config.chatLanguage : 'en';
         setError(humanizeError(e, k => translate(lang, k)));
       } finally {
