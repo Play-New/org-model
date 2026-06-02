@@ -28,4 +28,11 @@ describe('serializer round-trip', () => {
     expect(itemType(nodeToMarkdown(m.nodes[0]))).toBe('node');
     expect(itemType('no frontmatter here')).toBe('unknown');
   });
+
+  it('round-trips the prose note (the readable body)', () => {
+    const c = { ...m.contracts[0], note: '# Private donors\n\nThey fund the research `(site)`.\n\n## What holds it\nIndependence of the committee.' };
+    expect(parseContract(contractToMarkdown(c)).note).toBe(c.note);
+    const n = { ...m.nodes[0], note: 'Delivers the work `(site)`.' };
+    expect(parseNode(nodeToMarkdown(n)).note).toBe(n.note);
+  });
 });

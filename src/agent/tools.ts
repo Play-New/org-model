@@ -55,12 +55,13 @@ function toContract(i: Record<string, unknown>): Contract {
     sources: cites(i.sources),
   };
   if (typeof i.health === 'string') c.health = i.health as Contract['health'];
+  if (str(i.note)) c.note = str(i.note);
   return c;
 }
 
 function toNode(i: Record<string, unknown>): Node {
   const o = str(i.orientation);
-  return {
+  const n: Node = {
     id: str(i.id),
     name: str(i.name),
     orientation: (['core', 'service', 'platform'].includes(o) ? o : 'service') as Node['orientation'],
@@ -70,6 +71,8 @@ function toNode(i: Record<string, unknown>): Node {
     needsToday: str(i.needsToday ?? i.needsNow),
     sources: cites(i.sources),
   };
+  if (str(i.note)) n.note = str(i.note);
+  return n;
 }
 
 async function prependLog(a: StorageAdapter, line: string): Promise<void> {
@@ -156,9 +159,10 @@ export const TOOL_DEFS: ToolDef[] = [
         gets: { type: 'string', description: 'what comes back that sustains the org' },
         constraints: { type: 'array', items: { type: 'string' } },
         measures: { type: 'object', properties: { gives: measureSchema, gets: measureSchema } },
+        note: { type: 'string', description: 'human-readable prose body (markdown): a short lead + one or two ## sub-headings, with inline (source-id) citations. This is what a person reads — write it in the model language.' },
         sources: citationsSchema,
       },
-      required: ['id', 'with', 'gives', 'gets'],
+      required: ['id', 'with', 'gives', 'gets', 'note'],
     },
   },
   {
@@ -174,9 +178,10 @@ export const TOOL_DEFS: ToolDef[] = [
         dependsOn: { type: 'array', items: { type: 'string' }, description: 'node ids it relies on' },
         composition: { type: 'string' },
         needsToday: { type: 'string' },
+        note: { type: 'string', description: 'human-readable prose body (markdown): a short lead + one or two ## sub-headings, with inline (source-id) citations. This is what a person reads — write it in the model language.' },
         sources: citationsSchema,
       },
-      required: ['id', 'name', 'orientation'],
+      required: ['id', 'name', 'orientation', 'note'],
     },
   },
   {

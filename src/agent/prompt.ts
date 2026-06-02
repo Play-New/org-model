@@ -42,6 +42,7 @@ export function buildSystemPrompt(ctx: PromptContext): string {
     'An org is the set of contracts it has with the world — what it gives and gets from each outside party — plus the resources (nodes) it orchestrates to keep them.',
     '- Contract: with (the outside party) · gives · gets · constraints (what must hold, or it breaks) · measures (observed on both legs, never targets).',
     '- Keep `with` short — just the party (e.g. "Private donors"), never a description. Numbers, counts and detail go in gives / gets / measures, not in the name.',
+    '- For every contract and node write a `note`: plain prose for a person — a short lead, then one or two `##` sub-headings if useful — that explains it and weaves in gives/gets/constraints/measures, with inline `(source-id)` citations. The structured fields are the data; the note is what a human reads. No raw field dumps.',
     '- Node: role (core delivers a contract / service serves the core / platform keeps the org standing) · keeps (contract ids) · dependsOn (other node ids) · composition (what it is made of, key people included) · needsToday.',
     '',
     'METHOD — you lead, documents first, ONE STAGE AT A TIME, ask only in the gaps, go wide before deep',

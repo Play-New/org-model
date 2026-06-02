@@ -111,22 +111,14 @@ export function contractToMarkdown(c: Contract): string {
     ...(c.health ? { health: c.health } : {}),
     sources: citationsToStr(c.sources),
   };
-  const body = [
-    `# ${c.withParty || c.id}`,
-    '',
-    `**Gives** — ${c.give || '—'}`,
-    `**Gets** — ${c.get || '—'}`,
-    '',
-    c.constraints.length ? `Conditions: ${c.constraints.join('; ')}` : '',
-  ]
-    .filter(Boolean)
-    .join('\n');
-  return `${frontmatter(data)}\n${body}\n`;
+  // The body is the agent's prose (Zeno-style: headings + inline (source) citations).
+  return `${frontmatter(data)}\n${(c.note ?? '').trim()}\n`;
 }
 
 export function parseContract(md: string): Contract {
-  const { data } = splitFrontmatter(md);
+  const { data, body } = splitFrontmatter(md);
   const measures = (data.measures ?? {}) as Record<string, unknown>;
+  const note = body.trim();
   return {
     id: str(data.id),
     withParty: str(data.with),
@@ -140,6 +132,7 @@ export function parseContract(md: string): Contract {
     ...(typeof data.health === 'string'
       ? { health: data.health as ContractHealth }
       : {}),
+    ...(note ? { note } : {}),
     sources: strToCitations(data.sources),
   };
 }
@@ -158,22 +151,13 @@ export function nodeToMarkdown(n: Node): string {
     needsToday: n.needsToday,
     sources: citationsToStr(n.sources),
   };
-  const body = [
-    `# ${n.name || n.id}`,
-    '',
-    `_${n.orientation}_`,
-    '',
-    n.composition ? `Made of: ${n.composition}` : '',
-    n.needsToday ? `Needs now: ${n.needsToday}` : '',
-  ]
-    .filter(Boolean)
-    .join('\n');
-  return `${frontmatter(data)}\n${body}\n`;
+  return `${frontmatter(data)}\n${(n.note ?? '').trim()}\n`;
 }
 
 export function parseNode(md: string): Node {
-  const { data } = splitFrontmatter(md);
+  const { data, body } = splitFrontmatter(md);
   const orientation = str(data.orientation);
+  const note = body.trim();
   return {
     id: str(data.id),
     name: str(data.name),
@@ -184,6 +168,7 @@ export function parseNode(md: string): Node {
     dependsOn: strArray(data.dependsOn),
     composition: str(data.composition),
     needsToday: str(data.needsToday),
+    ...(note ? { note } : {}),
     sources: strToCitations(data.sources),
   };
 }

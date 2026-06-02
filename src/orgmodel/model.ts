@@ -46,6 +46,7 @@ export interface Contract {
   constraints: string[]; // vincoli — conditions under which the contract holds
   measures: { give: Measure[]; get: Measure[] }; // how you know value flows, both legs
   health?: ContractHealth; // derived by the agent from measures + constraints
+  note?: string; // the human-readable prose body (markdown, with inline (source) citations)
   sources: Citation[];
 }
 
@@ -65,6 +66,7 @@ export interface Node {
   dependsOn: string[]; // other Node ids this node relies on (core→service→platform)
   composition: string; // what it is made of (incl. key people if any)
   needsToday: string; // conditions it needs right now to stand (beyond the nodes in dependsOn)
+  note?: string; // the human-readable prose body (markdown, with inline (source) citations)
   sources: Citation[];
 }
 
