@@ -18,6 +18,18 @@ import type { LlmProvider, ProviderRequest, ProviderTurn } from './types';
 const OPUS = 'claude-opus-4-8';
 const SONNET = 'claude-sonnet-4-6';
 
+// Files API: upload a document once, reference it by id — no per-request size
+// limit, so large PDFs go through. The beta is sent only on the calls that use it.
+const FILES_BETA = 'files-api-2025-04-14';
+const filesOpts = { headers: { 'anthropic-beta': FILES_BETA } };
+
+/** True if any user message carries a Files-API document reference. */
+function usesFiles(messages: ProviderRequest['messages']): boolean {
+  return messages.some(
+    m => m.role === 'user' && m.content.some(b => b.type === 'document' && !!(b as { fileId?: string }).fileId),
+  );
+}
+
 export function modelId(choice: ModelChoice): string {
   return choice === 'opus' ? OPUS : SONNET;
 }
@@ -38,15 +50,24 @@ export class AnthropicProvider implements LlmProvider {
     this.opts = opts;
   }
 
+  /** Upload a document to the Files API; returns its file id for a document block. */
+  async uploadFile(file: Blob): Promise<string> {
+    const res = await this.client.beta.files.upload({ file } as never, filesOpts);
+    return (res as { id: string }).id;
+  }
+
   async run(req: ProviderRequest): Promise<ProviderTurn> {
-    const res = await this.client.messages.create({
-      model: modelId(this.opts.model),
-      max_tokens: this.opts.maxTokens ?? 8192,
-      system: req.system,
-      // wire shapes are correct; cast isolates us from SDK param-type churn
-      messages: toApiMessages(req.messages) as never,
-      tools: toApiTools(req.tools, this.opts.webSearch ?? true) as never,
-    });
+    const res = await this.client.messages.create(
+      {
+        model: modelId(this.opts.model),
+        max_tokens: this.opts.maxTokens ?? 8192,
+        system: req.system,
+        // wire shapes are correct; cast isolates us from SDK param-type churn
+        messages: toApiMessages(req.messages) as never,
+        tools: toApiTools(req.tools, this.opts.webSearch ?? true) as never,
+      },
+      usesFiles(req.messages) ? filesOpts : undefined,
+    );
     return {
       content: fromApiContent(res.content as unknown as Array<Record<string, unknown>>),
       stopReason: res.stop_reason ?? '',
@@ -54,13 +75,16 @@ export class AnthropicProvider implements LlmProvider {
   }
 
   async runStream(req: ProviderRequest, onDelta: (text: string) => void): Promise<ProviderTurn> {
-    const stream = this.client.messages.stream({
-      model: modelId(this.opts.model),
-      max_tokens: this.opts.maxTokens ?? 8192,
-      system: req.system,
-      messages: toApiMessages(req.messages) as never,
-      tools: toApiTools(req.tools, this.opts.webSearch ?? true) as never,
-    });
+    const stream = this.client.messages.stream(
+      {
+        model: modelId(this.opts.model),
+        max_tokens: this.opts.maxTokens ?? 8192,
+        system: req.system,
+        messages: toApiMessages(req.messages) as never,
+        tools: toApiTools(req.tools, this.opts.webSearch ?? true) as never,
+      },
+      usesFiles(req.messages) ? filesOpts : undefined,
+    );
     stream.on('text', (delta: string) => onDelta(delta));
     const final = await stream.finalMessage();
     return {

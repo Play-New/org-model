@@ -37,11 +37,14 @@ export interface ImageBlock {
   dataBase64: string;
 }
 
-/** A binary document (today: PDF) sent to the model as a native document block. */
+/** A binary document (today: PDF) sent to the model as a native document block.
+ *  Preferred: a Files-API reference (`fileId`) — no per-request size limit. The
+ *  base64 fields are a fallback for small inline documents. */
 export interface DocumentBlock {
   type: 'document';
-  mediaType: string;
-  dataBase64: string;
+  fileId?: string;
+  mediaType?: string;
+  dataBase64?: string;
 }
 
 export type UserBlock = TextBlock | ToolResultBlock | ImageBlock | DocumentBlock;

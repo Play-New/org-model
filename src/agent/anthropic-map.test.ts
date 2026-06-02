@@ -26,6 +26,22 @@ describe('anthropic mapping', () => {
     ]);
   });
 
+  it('maps a document block by Files-API id (preferred) and by base64 (fallback)', () => {
+    const msgs: Message[] = [
+      {
+        role: 'user',
+        content: [
+          { type: 'document', fileId: 'file_abc' },
+          { type: 'document', mediaType: 'application/pdf', dataBase64: 'JVBER' },
+        ],
+      },
+    ];
+    expect(toApiMessages(msgs)[0].content).toEqual([
+      { type: 'document', source: { type: 'file', file_id: 'file_abc' } },
+      { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: 'JVBER' } },
+    ]);
+  });
+
   it('maps assistant tool_use to the wire shape', () => {
     const msgs: Message[] = [
       { role: 'assistant', content: [{ type: 'tool_use', id: 'x', name: 'write_contract', input: { id: 'c' } }] },

@@ -29,7 +29,7 @@ interface ApiImage {
 }
 interface ApiDocument {
   type: 'document';
-  source: { type: 'base64'; media_type: string; data: string };
+  source: { type: 'base64'; media_type: string; data: string } | { type: 'file'; file_id: string };
 }
 type ApiBlock = ApiText | ApiToolUse | ApiToolResult | ApiImage | ApiDocument;
 
@@ -68,7 +68,9 @@ export function toApiMessages(messages: Message[]): ApiMessage[] {
           return r;
         }
         if (b.type === 'image') return { type: 'image', source: { type: 'base64', media_type: b.mediaType, data: b.dataBase64 } };
-        return { type: 'document', source: { type: 'base64', media_type: b.mediaType, data: b.dataBase64 } };
+        return b.fileId
+          ? { type: 'document', source: { type: 'file', file_id: b.fileId } }
+          : { type: 'document', source: { type: 'base64', media_type: b.mediaType ?? 'application/pdf', data: b.dataBase64 ?? '' } };
       }),
     };
   });

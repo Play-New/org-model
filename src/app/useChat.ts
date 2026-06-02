@@ -15,7 +15,7 @@ import { runAgent } from '../agent/loop';
 import { buildSystemPrompt } from '../agent/prompt';
 import { humanizeError } from './errors';
 import { isLang, translate } from '../i18n';
-import type { ImageBlock, UserBlock } from '../agent/types';
+import type { DocumentBlock, ImageBlock, UserBlock } from '../agent/types';
 import type { AppConfig } from '../config/config';
 import { lint } from '../orgmodel/lint';
 import { listSourceIds, loadModel } from '../orgmodel/store';
@@ -50,7 +50,7 @@ export interface ChatState {
     text: string,
     images?: ImageBlock[],
     docs?: { name: string; text: string }[],
-    pdfs?: { name: string; mediaType: string; dataBase64: string }[],
+    pdfs?: { name: string; file: File }[],
   ) => Promise<void>;
   resolvePending: (ok: boolean) => void;
   newChat: () => void;
@@ -231,17 +231,34 @@ export function useChat(adapter: StorageAdapter, config: AppConfig, onModelChang
       text: string,
       images: ImageBlock[] = [],
       docs: { name: string; text: string }[] = [],
-      pdfs: { name: string; mediaType: string; dataBase64: string }[] = [],
+      pdfs: { name: string; file: File }[] = [],
     ) => {
+      // Upload PDFs to the Files API first, then reference them by id — keeps the
+      // request small so large documents go through. Failures surface like any other.
+      const pdfBlocks: DocumentBlock[] = [];
+      if (pdfs.length) {
+        setBusy(true);
+        setError(null);
+        try {
+          const { AnthropicProvider } = await import('../agent/anthropic');
+          const provider = new AnthropicProvider({ apiKey: config.apiKey, model: config.model });
+          for (const p of pdfs) pdfBlocks.push({ type: 'document', fileId: await provider.uploadFile(p.file) });
+        } catch (e) {
+          console.error('[org] upload error:', e);
+          const lang = isLang(config.chatLanguage) ? config.chatLanguage : 'en';
+          setError(humanizeError(e, k => translate(lang, k)));
+          setBusy(false);
+          return;
+        }
+      }
       const docBlocks = docs.map(d => ({ type: 'text' as const, text: `Documento allegato — ${d.name}:\n\n${d.text}` }));
-      const pdfBlocks = pdfs.map(p => ({ type: 'document' as const, mediaType: p.mediaType, dataBase64: p.dataBase64 }));
       const names = [...docs.map(d => d.name), ...pdfs.map(p => p.name)];
       const hasFiles = names.length > 0 || images.length > 0;
       const body = text.trim() || (hasFiles ? 'Ti allego dei documenti — leggili e usali per mappare.' : '(allegato)');
       const display = text.trim() || (names.length ? `📎 ${names.join(', ')}` : '(allegato)');
       await run([...docBlocks, ...pdfBlocks, { type: 'text', text: body }, ...images], display);
     },
-    [run],
+    [run, config],
   );
 
   const resolvePending = useCallback((ok: boolean) => {
