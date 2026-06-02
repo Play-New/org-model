@@ -14,8 +14,13 @@ describe('classifyAttachment', () => {
     expect(classifyAttachment('NUMBERS.CSV', '')).toBe('text');
   });
 
-  it('leaves the rest unsupported', () => {
-    expect(classifyAttachment('report.pdf', 'application/pdf')).toBe('unsupported');
+  it('treats PDFs as a native document', () => {
+    expect(classifyAttachment('report.pdf', 'application/pdf')).toBe('pdf');
+    expect(classifyAttachment('REPORT.PDF', '')).toBe('pdf');
+  });
+
+  it('leaves Office and the rest unsupported', () => {
+    expect(classifyAttachment('deck.pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation')).toBe('unsupported');
     expect(classifyAttachment('archive.zip', 'application/zip')).toBe('unsupported');
   });
 });

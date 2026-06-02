@@ -9,7 +9,7 @@ describe('buildSystemPrompt', () => {
     const p = buildSystemPrompt({ config });
     expect(p).toContain('Acme');
     expect(p).toContain('Talk with the user in Italian');
-    expect(p).toContain('Write the model content (contracts, nodes) in English');
+    expect(p).toContain('in English, ALWAYS'); // model content written in the model language regardless of the docs
   });
 
   it('states the lens and the five-step method', () => {

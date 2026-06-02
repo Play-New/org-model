@@ -46,7 +46,12 @@ export interface ChatState {
   error: string | null;
   threads: ThreadMeta[];
   currentId: string;
-  send: (text: string, images?: ImageBlock[], docs?: { name: string; text: string }[]) => Promise<void>;
+  send: (
+    text: string,
+    images?: ImageBlock[],
+    docs?: { name: string; text: string }[],
+    pdfs?: { name: string; mediaType: string; dataBase64: string }[],
+  ) => Promise<void>;
   resolvePending: (ok: boolean) => void;
   newChat: () => void;
   openThread: (id: string) => void;
@@ -220,11 +225,19 @@ export function useChat(adapter: StorageAdapter, config: AppConfig, onModelChang
   }, [adapter, startFresh]);
 
   const send = useCallback(
-    async (text: string, images: ImageBlock[] = [], docs: { name: string; text: string }[] = []) => {
+    async (
+      text: string,
+      images: ImageBlock[] = [],
+      docs: { name: string; text: string }[] = [],
+      pdfs: { name: string; mediaType: string; dataBase64: string }[] = [],
+    ) => {
       const docBlocks = docs.map(d => ({ type: 'text' as const, text: `Documento allegato — ${d.name}:\n\n${d.text}` }));
-      const body = text.trim() || (docs.length ? 'Ti allego dei documenti — leggili e usali per mappare.' : '(allegato)');
-      const display = text.trim() || (docs.length ? `📎 ${docs.map(d => d.name).join(', ')}` : '(allegato)');
-      await run([...docBlocks, { type: 'text', text: body }, ...images], display);
+      const pdfBlocks = pdfs.map(p => ({ type: 'document' as const, mediaType: p.mediaType, dataBase64: p.dataBase64 }));
+      const names = [...docs.map(d => d.name), ...pdfs.map(p => p.name)];
+      const hasFiles = names.length > 0 || images.length > 0;
+      const body = text.trim() || (hasFiles ? 'Ti allego dei documenti — leggili e usali per mappare.' : '(allegato)');
+      const display = text.trim() || (names.length ? `📎 ${names.join(', ')}` : '(allegato)');
+      await run([...docBlocks, ...pdfBlocks, { type: 'text', text: body }, ...images], display);
     },
     [run],
   );

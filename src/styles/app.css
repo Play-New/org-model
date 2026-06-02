@@ -254,14 +254,14 @@ input, select, textarea { font: inherit; color: inherit; }
 .org__count { font-size: var(--t-xs); font-weight: var(--w-regular); color: var(--state-done); }
 .org__count.is-missing { color: var(--state-partial); }
 .org__item {
-  display: flex; align-items: center; gap: var(--sp-2);
+  display: flex; align-items: center; gap: var(--sp-2); overflow: hidden;
   width: 100%; text-align: left; padding: var(--sp-2);
   border-radius: var(--r-md); color: var(--fg); font-size: var(--t-sm);
   transition: background var(--dur-fast) var(--ease-out);
 }
 .org__item:hover { background: var(--bg-muted); }
 .org__item.is-selected { background: var(--bg-muted); font-weight: var(--w-medium); box-shadow: inset 2px 0 0 var(--fg); }
-.org__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.org__label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .org__empty { color: var(--fg-faint); font-size: var(--t-xs); padding: 0 var(--sp-2) var(--sp-1); font-style: italic; }
 
 .dot { width: 8px; height: 8px; border-radius: var(--r-full); flex: 0 0 auto; }

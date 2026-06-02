@@ -49,7 +49,7 @@ export function Shell({ config, adapter, onOpenSettings }: ShellProps) {
               <ConstellationMark size={26} />
             </span>
           )}
-          <span className="brand__name">Org/</span>
+          <span className="brand__name">{config.orgName || 'Org/'}</span>
           {readOnly && <span className="badge">{t('shell.readonly')}</span>}
         </div>
         <button className="iconbtn iconbtn--lg" onClick={onOpenSettings} aria-label={t('shell.settings')} title={t('shell.settings')}>

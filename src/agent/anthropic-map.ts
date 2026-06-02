@@ -27,7 +27,11 @@ interface ApiImage {
   type: 'image';
   source: { type: 'base64'; media_type: string; data: string };
 }
-type ApiBlock = ApiText | ApiToolUse | ApiToolResult | ApiImage;
+interface ApiDocument {
+  type: 'document';
+  source: { type: 'base64'; media_type: string; data: string };
+}
+type ApiBlock = ApiText | ApiToolUse | ApiToolResult | ApiImage | ApiDocument;
 
 export interface ApiMessage {
   role: 'user' | 'assistant';
@@ -63,7 +67,8 @@ export function toApiMessages(messages: Message[]): ApiMessage[] {
           if (b.is_error) r.is_error = true;
           return r;
         }
-        return { type: 'image', source: { type: 'base64', media_type: b.mediaType, data: b.dataBase64 } };
+        if (b.type === 'image') return { type: 'image', source: { type: 'base64', media_type: b.mediaType, data: b.dataBase64 } };
+        return { type: 'document', source: { type: 'base64', media_type: b.mediaType, data: b.dataBase64 } };
       }),
     };
   });

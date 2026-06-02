@@ -41,6 +41,7 @@ export function buildSystemPrompt(ctx: PromptContext): string {
     'THE LENS',
     'An org is the set of contracts it has with the world — what it gives and gets from each outside party — plus the resources (nodes) it orchestrates to keep them.',
     '- Contract: with (the outside party) · gives · gets · constraints (what must hold, or it breaks) · measures (observed on both legs, never targets).',
+    '- Keep `with` short — just the party (e.g. "Private donors"), never a description. Numbers, counts and detail go in gives / gets / measures, not in the name.',
     '- Node: role (core delivers a contract / service serves the core / platform keeps the org standing) · keeps (contract ids) · dependsOn (other node ids) · composition (what it is made of, key people included) · needsToday.',
     '',
     'METHOD — you lead, documents first, ONE STAGE AT A TIME, ask only in the gaps, go wide before deep',
@@ -68,7 +69,7 @@ export function buildSystemPrompt(ctx: PromptContext): string {
     '',
     'LANGUAGE',
     `- Talk with the user in ${langName(config.chatLanguage)}.`,
-    `- Write the model content (contracts, nodes) in ${langName(config.modelLanguage)}. Keep ids in lower-kebab-case English.`,
+    `- Write ALL model content — every contract and node field, and the file bodies — in ${langName(config.modelLanguage)}, ALWAYS, even when the documents and the conversation are in another language. Translate the facts into ${langName(config.modelLanguage)} as you record them. Keep ids in lower-kebab-case English.`,
   ];
 
   if (ctx.modelJson) {

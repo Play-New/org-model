@@ -37,7 +37,14 @@ export interface ImageBlock {
   dataBase64: string;
 }
 
-export type UserBlock = TextBlock | ToolResultBlock | ImageBlock;
+/** A binary document (today: PDF) sent to the model as a native document block. */
+export interface DocumentBlock {
+  type: 'document';
+  mediaType: string;
+  dataBase64: string;
+}
+
+export type UserBlock = TextBlock | ToolResultBlock | ImageBlock | DocumentBlock;
 
 export type Message =
   | { role: 'user'; content: UserBlock[] }

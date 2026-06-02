@@ -29,11 +29,24 @@ function fileToImageBlock(file: File): Promise<ImageBlock | null> {
   });
 }
 
+function fileToBase64(file: File): Promise<string> {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const url = String(reader.result);
+      const comma = url.indexOf(',');
+      resolve(comma >= 0 ? url.slice(comma + 1) : url);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 export function ChatPane({ chat }: { chat: ChatState }) {
   const t = useT();
   const [text, setText] = useState('');
   const [images, setImages] = useState<ImageBlock[]>([]);
   const [docs, setDocs] = useState<{ name: string; text: string }[]>([]);
+  const [pdfs, setPdfs] = useState<{ name: string; mediaType: string; dataBase64: string }[]>([]);
   const [dragging, setDragging] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
@@ -47,12 +60,15 @@ export function ChatPane({ chat }: { chat: ChatState }) {
   const addFiles = async (files: File[]) => {
     const imgs: ImageBlock[] = [];
     const texts: { name: string; text: string }[] = [];
+    const docsPdf: { name: string; mediaType: string; dataBase64: string }[] = [];
     const skip: string[] = [];
     for (const f of files) {
       const kind = classifyAttachment(f.name, f.type);
       if (kind === 'image') {
         const b = await fileToImageBlock(f);
         if (b) imgs.push(b);
+      } else if (kind === 'pdf') {
+        docsPdf.push({ name: f.name, mediaType: 'application/pdf', dataBase64: await fileToBase64(f) });
       } else if (kind === 'text') {
         texts.push({ name: f.name, text: await f.text() });
       } else {
@@ -61,7 +77,8 @@ export function ChatPane({ chat }: { chat: ChatState }) {
     }
     if (imgs.length) setImages(prev => [...prev, ...imgs]);
     if (texts.length) setDocs(prev => [...prev, ...texts]);
-    setSkipped(skip); // names we couldn't read (e.g. PDF) — shown, not silently dropped
+    if (docsPdf.length) setPdfs(prev => [...prev, ...docsPdf]);
+    setSkipped(skip); // names we couldn't read (e.g. Office) — shown, not silently dropped
   };
 
   const onPickFiles = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -100,14 +117,16 @@ export function ChatPane({ chat }: { chat: ChatState }) {
 
   const submit = async () => {
     const t = text.trim();
-    if (!t && images.length === 0 && docs.length === 0) return;
+    if (!t && images.length === 0 && docs.length === 0 && pdfs.length === 0) return;
     const imgs = images;
     const ds = docs;
+    const ps = pdfs;
     setText('');
     setImages([]);
     setDocs([]);
+    setPdfs([]);
     setSkipped([]);
-    await chat.send(t, imgs, ds);
+    await chat.send(t, imgs, ds, ps);
   };
 
   const onDrop = async (e: DragEvent<HTMLDivElement>) => {
@@ -238,10 +257,13 @@ export function ChatPane({ chat }: { chat: ChatState }) {
       </div>
 
       <div className="composer">
-        {(images.length > 0 || docs.length > 0) && (
+        {(images.length > 0 || docs.length > 0 || pdfs.length > 0) && (
           <div className="composer__chips">
             {docs.map((d, i) => (
               <span key={`d${i}`} className="composer__chip">{d.name}</span>
+            ))}
+            {pdfs.map((p, i) => (
+              <span key={`p${i}`} className="composer__chip">{p.name}</span>
             ))}
             {images.length > 0 && <span className="composer__chip">{t('chat.images', images.length)}</span>}
           </div>
@@ -254,7 +276,7 @@ export function ChatPane({ chat }: { chat: ChatState }) {
           <input
             ref={fileRef}
             type="file"
-            accept="image/*,text/*,.md,.markdown,.txt,.csv,.json,.yaml,.yml"
+            accept="image/*,application/pdf,.pdf,text/*,.md,.markdown,.txt,.csv,.json,.yaml,.yml"
             multiple
             hidden
             onChange={onPickFiles}
