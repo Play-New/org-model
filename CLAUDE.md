@@ -70,19 +70,21 @@ constants when a newer Opus/Sonnet ships (one place).
 
 - `pnpm install`
 - `pnpm dev` — open in a Chromium browser (Edge / Chrome; needs File System Access)
-- `pnpm test` — unit + engine-level e2e (mocked LLM); **92 tests**
+- `pnpm test` — unit + engine-level e2e (mocked LLM); **97 tests**
 - `pnpm lint` · `pnpm build` (static bundle + PWA)
 
-## State as of 2026-06-02 (all green: tsc · lint · 92 tests · build + PWA)
+## State as of 2026-06-02 (all green: tsc · lint · 97 tests · build + PWA)
 
 Done and working:
 - Welcome screen ("Welcome to your organization.") → wizard → connect (folder **or**
   GitHub) → 3-pane shell (Org / Chat / Workspace), brand from config, responsive +
   phone bottom-nav. Full 6-language i18n; UI follows the chat language.
 - Chat: streaming replies, diff-card gate, vision + **document upload** — text/md
-  inline, and **PDF via the Anthropic Files API** (upload once, reference by
-  `file_id`, no per-request size limit; the files beta is sent only on calls that
-  use it — `usesFiles` in `agent/anthropic-map.ts`). Chat persistence (chats are
+  inline, **PDF via the Anthropic Files API** (upload once, reference by `file_id`,
+  no per-request size limit; the files beta is sent only on calls that use it —
+  `usesFiles` in `agent/anthropic-map.ts`), and **Office (docx / xlsx / pptx)**
+  extracted to text in the browser (mammoth / SheetJS / JSZip, lazy-loaded —
+  `ui/extractOffice.ts`). Chat persistence (chats are
   sources), **date→topic titles**, **delete chat** (keeps `log.md`), jump-to-bottom,
   auto-grow composer. The agent works **one stage at a time** (contracts complete
   before nodes) and writes Zeno-style prose: frontmatter + agentic body,
@@ -102,8 +104,6 @@ the new source) and a **"Disconnect & reset"** action in settings
 (`forgetConnection` + `clearApiKey` + `clearGithubToken` + reload).
 
 Pending follow-up (needs you):
-- **Office extractors** (docx via mammoth, xlsx via SheetJS, pptx via JSZip) —
-  requested; PDF is done via the Files API, Office is not yet wired.
 - **Analysis capability** (`ANALYSIS.md`) — designed, not built; open product
   questions (granularity, output form, cadence) await alignment.
 - **Live browser pass** — a real Anthropic key (and, for GitHub, a repo + a

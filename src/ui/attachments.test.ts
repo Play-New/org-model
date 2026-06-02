@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { classifyAttachment } from './attachments';
+import { classifyAttachment, officeKind } from './attachments';
 
 describe('classifyAttachment', () => {
   it('treats images as vision', () => {
@@ -19,8 +19,23 @@ describe('classifyAttachment', () => {
     expect(classifyAttachment('REPORT.PDF', '')).toBe('pdf');
   });
 
-  it('leaves Office and the rest unsupported', () => {
-    expect(classifyAttachment('deck.pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation')).toBe('unsupported');
+  it('treats Office files as office — by mime or by extension', () => {
+    expect(classifyAttachment('deck.pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation')).toBe('office');
+    expect(classifyAttachment('Bilancio.xlsx', '')).toBe('office');
+    expect(classifyAttachment('statuto.docx', '')).toBe('office');
+    expect(classifyAttachment('legacy.xls', '')).toBe('office');
+  });
+
+  it('leaves the rest unsupported', () => {
     expect(classifyAttachment('archive.zip', 'application/zip')).toBe('unsupported');
+    expect(classifyAttachment('video.mp4', 'video/mp4')).toBe('unsupported');
+  });
+
+  it('classifies the Office family by mime first, then extension', () => {
+    expect(officeKind('a.docx', '')).toBe('docx');
+    expect(officeKind('a.xlsx', '')).toBe('xlsx');
+    expect(officeKind('a.pptx', '')).toBe('pptx');
+    expect(officeKind('mislabelled', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')).toBe('xlsx');
+    expect(officeKind('notes.txt', 'text/plain')).toBeNull();
   });
 });

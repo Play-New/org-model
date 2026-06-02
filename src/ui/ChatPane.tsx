@@ -10,6 +10,7 @@ import type { ChatState } from '../app/useChat';
 import { ArrowUp, PaperclipIcon, PlusIcon, TrashIcon } from './icons';
 import { useT } from '../i18n';
 import { classifyAttachment } from './attachments';
+import { extractOffice } from './extractOffice';
 import { DiffCard } from './DiffCard';
 import { Select } from './Select';
 
@@ -59,6 +60,15 @@ export function ChatPane({ chat }: { chat: ChatState }) {
         docsPdf.push({ name: f.name, file: f });
       } else if (kind === 'text') {
         texts.push({ name: f.name, text: await f.text() });
+      } else if (kind === 'office') {
+        try {
+          const extracted = (await extractOffice(f))?.trim();
+          if (extracted) texts.push({ name: f.name, text: extracted });
+          else skip.push(f.name); // recognised but empty / unreadable
+        } catch (err) {
+          console.error('[org] office extract failed:', f.name, err);
+          skip.push(f.name);
+        }
       } else {
         skip.push(f.name);
       }
@@ -264,7 +274,7 @@ export function ChatPane({ chat }: { chat: ChatState }) {
           <input
             ref={fileRef}
             type="file"
-            accept="image/*,application/pdf,.pdf,text/*,.md,.markdown,.txt,.csv,.json,.yaml,.yml"
+            accept="image/*,application/pdf,.pdf,text/*,.md,.markdown,.txt,.csv,.json,.yaml,.yml,.docx,.xlsx,.xls,.pptx"
             multiple
             hidden
             onChange={onPickFiles}

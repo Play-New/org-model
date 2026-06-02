@@ -33,7 +33,7 @@ the only network calls are the ones the agent makes to Anthropic on your behalf.
 
 ## Verify
 
-- `pnpm test` — unit + engine-level end-to-end with a mocked LLM (92 tests)
+- `pnpm test` — unit + engine-level end-to-end with a mocked LLM (97 tests)
 - `pnpm lint`
 - `pnpm build` — static bundle + PWA (manifest + service worker), code-split
 

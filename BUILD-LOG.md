@@ -60,7 +60,7 @@ its own public repo (`Play-New/org`) on 2026-06-01; the code is generic.
 
 ## Status (2026-06-02)
 
-`tsc` clean · `eslint` clean · **92 tests** · `vite build` clean · PWA
+`tsc` clean · `eslint` clean · **97 tests** · `vite build` clean · PWA
 generated · deployed at https://play-new.github.io/org/.
 
 The one thing tests can't cover is the live agent loop — it needs a real Anthropic
