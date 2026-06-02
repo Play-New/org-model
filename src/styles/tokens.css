@@ -1,0 +1,170 @@
+/* ==========================================================================
+   PLAYABLE ORG — Design tokens
+   Monochrome on warm paper. One font family.
+
+   Default: Inter Variable (Rasmus Andersson, SIL OFL — freely redistributable).
+   Forks (e.g. a brand) can override --font-display / --font-body to Mirage or
+   any other brand font by replacing the woff2 at /fonts/ and re-pointing
+   the family name. Same pattern as skills/design.py.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Mirage';
+  src: url('/fonts/mirage-variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter Variable';
+  src: url('/fonts/inter-variable.woff2') format('woff2-variations'),
+       url('/fonts/inter-variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+:root {
+  /* COLOR — opacity-layered black on warm paper. No chromatic colors. */
+  --bg:              #FFFFFF;
+  --bg-warm:         #F7F6F3;             /* app background */
+  --bg-alt:          rgba(0, 0, 0, 0.03); /* card / section tint */
+  --bg-muted:        rgba(0, 0, 0, 0.05); /* slightly stronger tint */
+  --bg-dark:         #1A1A1A;
+
+  --fg:              rgba(0, 0, 0, 0.9);
+  --fg-muted:        rgba(0, 0, 0, 0.5);
+  --fg-light:        rgba(0, 0, 0, 0.35);
+  --fg-faint:        rgba(0, 0, 0, 0.25);
+  --fg-hairline:     rgba(0, 0, 0, 0.1);
+
+  --fg-inverse:      #FAFAFA;
+  --fg-inverse-90:   rgba(255, 255, 255, 0.9);
+  --fg-inverse-70:   rgba(255, 255, 255, 0.7);
+  --fg-inverse-50:   rgba(255, 255, 255, 0.5);
+  --fg-inverse-15:   rgba(255, 255, 255, 0.15);
+  --fg-inverse-08:   rgba(255, 255, 255, 0.08);
+
+  --accent:          rgba(0, 0, 0, 0.9);
+  --selection-bg:    rgba(0, 0, 0, 0.9);
+  --selection-fg:    #FFFFFF;
+
+  /* TYPE — single family, variable weights. */
+  --font-display: 'Mirage', 'Inter Variable', system-ui, -apple-system, sans-serif;
+  --font-body:    'Mirage', 'Inter Variable', system-ui, -apple-system, sans-serif;
+  --font-mono:    ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --w-regular:  400;
+  --w-medium:   500;
+  --w-semibold: 600;
+  --w-bold:     700;
+
+  --t-xs:   0.75rem;
+  --t-sm:   0.8125rem;
+  --t-base: 1rem;
+  --t-lg:   1.25rem;
+  --t-xl:   1.5rem;
+  --t-2xl:  1.75rem;
+  --t-3xl:  2rem;
+  --t-4xl:  2.5rem;
+  --t-5xl:  4rem;
+
+  --lh-tight:   0.9;
+  --lh-display: 1.1;
+  --lh-snug:    1.25;
+  --lh-normal:  1.5;
+  --lh-relaxed: 1.7;
+
+  --ls-h1:      -0.04em;
+  --ls-h2:      -0.03em;
+  --ls-tight:   -0.02em;
+  --ls-wide:    0.04em;
+
+  /* SPACING — 4px grid */
+  --sp-1:  0.25rem;
+  --sp-2:  0.5rem;
+  --sp-3:  0.75rem;
+  --sp-4:  1rem;
+  --sp-5:  1.25rem;
+  --sp-6:  1.5rem;
+  --sp-8:  2rem;
+  --sp-10: 2.5rem;
+  --sp-12: 3rem;
+
+  /* RADII */
+  --r-sm:    0.25rem;
+  --r-md:    0.5rem;
+  --r-lg:    0.75rem;
+  --r-xl:    1rem;
+  --r-2xl:   1.25rem;
+  --r-full:  9999px;
+
+  /* SHADOWS */
+  --shadow-paper:  0 4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-banner: 0 4px 24px rgba(0, 0, 0, 0.2);
+
+  /* MOTION */
+  --dur-fast:   0.2s;
+  --dur-base:   0.3s;
+  --dur-slow:   0.5s;
+  --ease-out:   cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-in:    ease-in;
+}
+
+/* ==========================================================================
+   APP EXTENSION — secondary pastels for category/state coding, panel
+   elevation, and a brand accent the wizard can override at runtime.
+   Brand surfaces stay monochrome; these only differentiate data.
+   ========================================================================== */
+:root {
+  /* DATA-VIZ PASTELS (muted, editorial) */
+  --ds-sage:  #7E9B84;
+  --ds-lilac: #9A8FB2;
+  --ds-slate: #7C8AA3;
+  --ds-sand:  #C3A26E;
+  --ds-coral: #CC8B79;
+
+  /* NODE ORIENTATION (Cicero) */
+  --ori-core:     var(--ds-slate);
+  --ori-service:  var(--ds-sage);
+  --ori-platform: var(--ds-sand);
+
+  /* FILL STATE — the file-tree dots */
+  --state-empty:   var(--fg-faint);
+  --state-partial: var(--ds-sand);
+  --state-done:    var(--ds-sage);
+
+  /* CONTRACT HEALTH */
+  --health-healthy:  var(--ds-sage);
+  --health-strained: var(--ds-sand);
+  --health-broken:   var(--ds-coral);
+
+  /* PANELS / ELEVATION */
+  --panel-bg:     var(--bg);
+  --panel-border: var(--fg-hairline);
+  --elev-1: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  --elev-2: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --elev-3: 0 12px 40px rgba(0, 0, 0, 0.12);
+
+  /* BRAND ACCENT — defaults to ink; the wizard/fork may override --brand-accent */
+  --brand-accent:    var(--accent);
+  --brand-accent-fg: #FFFFFF;
+
+  /* CONTROLS (shadcn-style, monochrome) */
+  --ring:      rgba(0, 0, 0, 0.13);
+  --control-h: 40px;
+
+  /* LAYOUT — Org (narrow) · Chat (narrow) · Workspace (the rest, largest) */
+  --org-w:  248px;
+  --chat-w: clamp(380px, 34vw, 460px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+::selection { background: var(--selection-bg); color: var(--selection-fg); }

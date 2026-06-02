@@ -1,0 +1,59 @@
+# Org/
+
+**This is your organization** — the promises it keeps to the world, and the parts
+inside that keep them. A local-first, browser-only app that maps any organization
+into a model of **contracts** (what it gives and gets from each outside party) and
+**nodes** (core / service / platform, with dependencies), guided by an agent,
+documents first. No backend.
+
+**Live:** https://play-new.github.io/org/ · open in Chrome or Edge.
+
+## What it does
+
+You point it at a folder (or a GitHub repo), drop in your documents, and talk to an
+agent. It writes a model of your org as plain markdown files — and **every write is
+a diff card you confirm**. The result is a durable, navigable picture of how the
+organization actually works, that you own and can keep.
+
+## Where your data lives (read this)
+
+**There is no server.** Everything runs in your browser. Nothing you write is
+uploaded to us — your documents and model stay on **your computer** (or **your own
+GitHub repo**), and your Anthropic key (and GitHub token, if used) are **encrypted
+on your device**, never shown, never stored in the org. It's bring-your-own-key:
+the only network calls are the ones the agent makes to Anthropic on your behalf.
+
+## Run
+
+- `pnpm install`
+- `pnpm dev` — open in a Chromium browser (Edge / Chrome; needs File System Access)
+- First run: a short wizard (languages · org name · logo · Anthropic key · model),
+  then choose a **source** — a local folder, or a **GitHub repo** (read + write,
+  where each save is a commit).
+
+## Verify
+
+- `pnpm test` — unit + engine-level end-to-end with a mocked LLM (85 tests)
+- `pnpm lint`
+- `pnpm build` — static bundle + PWA (manifest + service worker), code-split
+
+## Deploy
+
+Push to `main` → the GitHub Pages workflow tests, builds, and deploys. The live
+site is rebuilt automatically.
+
+## Stack
+
+Vite + React + TypeScript, vanilla CSS with design tokens. Storage behind one
+`StorageAdapter`: the File System Access API (a local folder) **or** the GitHub
+REST API (a repo, read + write). LLM via the Anthropic SDK in the browser (BYOK, no
+proxy; key encrypted at rest), with the web-search tool and vision. react-flow for
+the map. Installable as a PWA.
+
+## Docs
+
+- **CLAUDE.md** — resume handoff: current state, the hard rules, open follow-ups.
+- **AGENT-SPEC.md** — the model (contracts + nodes) and how the agent reasons.
+- **APP-SPEC.md** — the UI surface.
+- **ARCHITECTURE.md** — storage (local + GitHub), security, sync.
+- **BUILD-LOG.md** — what's built, in order.

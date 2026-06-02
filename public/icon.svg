@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Org Model">
+  <rect width="512" height="512" rx="112" fill="#1A1A1A"/>
+  <g stroke="#FAFAFA" stroke-width="16" stroke-linecap="round" opacity="0.55">
+    <line x1="112" y1="144" x2="272" y2="96"/>
+    <line x1="272" y1="96" x2="400" y2="208"/>
+    <line x1="112" y1="144" x2="192" y2="304"/>
+    <line x1="192" y1="304" x2="368" y2="368"/>
+    <line x1="400" y1="208" x2="368" y2="368"/>
+    <line x1="272" y1="96" x2="192" y2="304"/>
+  </g>
+  <g fill="#FAFAFA">
+    <circle cx="112" cy="144" r="32"/>
+    <circle cx="272" cy="96" r="26"/>
+    <circle cx="400" cy="208" r="32"/>
+    <circle cx="192" cy="304" r="26"/>
+    <circle cx="368" cy="368" r="42"/>
+  </g>
+</svg>
