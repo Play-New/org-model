@@ -283,6 +283,7 @@ input, select, textarea { font: inherit; color: inherit; }
 .workspace__bar button.is-active { background: var(--bg-muted); color: var(--fg); }
 .workspace__name { margin-left: auto; font-size: var(--t-xs); color: var(--fg-light); font-family: var(--font-mono); }
 .workspace__body { min-height: 0; overflow: auto; padding: var(--sp-6); }
+.filedoc { max-width: 720px; }
 .workspace__body.is-flush { padding: 0; overflow: hidden; }
 
 .filecode {

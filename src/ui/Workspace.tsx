@@ -2,10 +2,18 @@
  *  or node opens its file here. Toggle between Map and File. */
 
 import { lazy, Suspense } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useT } from '../i18n';
 import type { OrgModel } from '../orgmodel/model';
 import { contractToMarkdown, nodeToMarkdown } from '../orgmodel/serializer';
 import type { ItemKind } from '../orgmodel/viewmodel';
+
+/** Drop the YAML frontmatter so the viewer shows the human-readable body, not the raw file. */
+function body(markdown: string): string {
+  const m = /^---\n[\s\S]*?\n---\n?/.exec(markdown);
+  return m ? markdown.slice(m[0].length).trim() : markdown.trim();
+}
 
 const MapPane = lazy(() => import('./MapPane').then(m => ({ default: m.MapPane })));
 
@@ -52,7 +60,9 @@ export function Workspace({ model, selected, view, onView, onPick }: WorkspacePr
             <MapPane model={model} selectedId={selected?.id ?? null} onPick={onPick} />
           </Suspense>
         ) : markdown ? (
-          <pre className="filecode">{markdown}</pre>
+          <div className="prose filedoc">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{body(markdown)}</ReactMarkdown>
+          </div>
         ) : (
           <div className="pane__placeholder">{t('ws.pickItem')}</div>
         )}

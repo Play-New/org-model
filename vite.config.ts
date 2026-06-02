@@ -12,6 +12,10 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // While we iterate fast + demo, never serve a stale cached build: this ships a
+      // service worker that unregisters any previous one and clears its caches, so the
+      // site always loads fresh from the CDN. Re-enable full offline PWA once stable.
+      selfDestroying: true,
       includeAssets: ['icon.svg', 'fonts/mirage-variable.woff2', 'fonts/inter-variable.woff2'],
       // Generic manifest. A fork (e.g. a brand) overrides name + icons at build time;
       // the wizard sets the in-app title/favicon at runtime.
