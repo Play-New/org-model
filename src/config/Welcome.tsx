@@ -2,19 +2,13 @@
  *  Generic by design: no brand yet (that arrives in the wizard). */
 
 import { Tx, useT } from '../i18n';
-import { ArrowRight, ConstellationMark } from '../ui/icons';
+import { ArrowRight } from '../ui/icons';
 
 export function Welcome({ onStart }: { onStart: () => void }) {
   const t = useT();
   return (
     <div className="screen screen--wizard">
       <div className="welcome">
-        <div className="welcome__brand">
-          <span className="welcome__mark">
-            <ConstellationMark size={40} />
-          </span>
-          <span className="welcome__wordmark">Org/</span>
-        </div>
         <h1 className="welcome__headline">
           <Tx s={t('welcome.headline')} />
         </h1>
