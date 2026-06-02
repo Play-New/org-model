@@ -273,6 +273,14 @@ export const STRINGS: Record<string, Entry> = {
   'chat.send': S('Send', 'Invia', 'Enviar', 'Envoyer', 'Senden', 'Enviar'),
   'chat.jump': S('Jump to latest', 'Vai all’ultimo', 'Ir al último', 'Aller au dernier', 'Zum Neuesten springen', 'Ir ao mais recente'),
   'chat.images': S('{0} image(s)', '{0} immagine/i', '{0} imagen(es)', '{0} image(s)', '{0} Bild(er)', '{0} imagem(ns)'),
+  'chat.unsupported': S(
+    'Skipped {0} — for now only images and text files (md, txt, csv…). For a PDF, paste its text.',
+    'Saltati {0} — per ora solo immagini e file di testo (md, txt, csv…). Per un PDF, incolla il testo.',
+    'Omitidos {0} — por ahora solo imágenes y archivos de texto (md, txt, csv…). Para un PDF, pega el texto.',
+    'Ignorés {0} — pour l’instant seulement images et fichiers texte (md, txt, csv…). Pour un PDF, collez le texte.',
+    'Übersprungen: {0} — vorerst nur Bilder und Textdateien (md, txt, csv…). Für ein PDF den Text einfügen.',
+    'Ignorados {0} — por agora só imagens e ficheiros de texto (md, txt, csv…). Para um PDF, cole o texto.',
+  ),
 
   // ---- Workspace / map ----
   'ws.map': S('Map', 'Mappa', 'Mapa', 'Carte', 'Karte', 'Mapa'),

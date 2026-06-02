@@ -38,6 +38,7 @@ export function ChatPane({ chat }: { chat: ChatState }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [skipped, setSkipped] = useState<string[]>([]);
   const [atBottom, setAtBottom] = useState(true);
   const logRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -46,6 +47,7 @@ export function ChatPane({ chat }: { chat: ChatState }) {
   const addFiles = async (files: File[]) => {
     const imgs: ImageBlock[] = [];
     const texts: { name: string; text: string }[] = [];
+    const skip: string[] = [];
     for (const f of files) {
       const kind = classifyAttachment(f.name, f.type);
       if (kind === 'image') {
@@ -53,10 +55,13 @@ export function ChatPane({ chat }: { chat: ChatState }) {
         if (b) imgs.push(b);
       } else if (kind === 'text') {
         texts.push({ name: f.name, text: await f.text() });
+      } else {
+        skip.push(f.name);
       }
     }
     if (imgs.length) setImages(prev => [...prev, ...imgs]);
     if (texts.length) setDocs(prev => [...prev, ...texts]);
+    setSkipped(skip); // names we couldn't read (e.g. PDF) — shown, not silently dropped
   };
 
   const onPickFiles = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -101,6 +106,7 @@ export function ChatPane({ chat }: { chat: ChatState }) {
     setText('');
     setImages([]);
     setDocs([]);
+    setSkipped([]);
     await chat.send(t, imgs, ds);
   };
 
@@ -240,6 +246,7 @@ export function ChatPane({ chat }: { chat: ChatState }) {
             {images.length > 0 && <span className="composer__chip">{t('chat.images', images.length)}</span>}
           </div>
         )}
+        {skipped.length > 0 && <div className="composer__skip">{t('chat.unsupported', skipped.join(', '))}</div>}
         <div className="composer__box">
           <button type="button" className="composer__attach" onClick={() => fileRef.current?.click()} aria-label={t('chat.attach')} title={t('chat.attach')}>
             <PaperclipIcon />
