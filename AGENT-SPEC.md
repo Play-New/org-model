@@ -15,17 +15,28 @@ The agent doesn't strategize or interpret. It maps the org against this lens, in
 the org's own words. It can start knowing nothing, because the lens is only what's
 true of every org.
 
+This lens is the fixed, public **language** specified in `LANGUAGE.md` (built on
+Cicero / Boundaryless + Promise Theory). The agent never changes the language to fit
+the org — it is the **bridge** that re-expresses the org in it, citing every claim.
+This doc is the operational view of that language; `LANGUAGE.md` is canonical.
+
 ## Contracts
 
 One per outside party — mutual, usually unspoken. Each:
 
-- **with** — who, outside
-- **gives** — what the org gives them
-- **gets** — what comes back that keeps it alive
-- **conditions** — what has to hold, or the contract breaks
+- **with** — who, outside (kept short — just the party)
+- **org-gives** — what the org gives them (the promise it makes)
+- **org-gets** — what comes back that keeps it alive
+- **constraints** — what has to hold, or the contract breaks
 - **measures** — how you know it's actually happening, both ways (observed, not targets)
 
-Healthy / strained / broken is read off measures and conditions, not declared.
+Healthy / strained / broken is read off measures and constraints, not declared.
+
+Each contract carries a **detailed prose note**, written like a short legal
+document, in five `##` sections: **The parties** (who they are, with specifics) ·
+**What &lt;org&gt; gives** · **What &lt;org&gt; gets back** · **The terms** (the
+constraints) · **How we know** (the measures, with the actual figures). Inline
+`(source-id)` citations throughout. Rich documents → rich note.
 
 ## Nodes
 
@@ -50,9 +61,13 @@ method. Grouped into ~10-12, not every task. Each:
 
 Open light: *"in two lines, what do you do and for whom?"* Then:
 
+The agent works **one stage at a time**: it does not start the nodes until the
+contracts are complete and the user has confirmed them. Pacing is about how *many*
+items per turn, never how *deep* — every contract and node is detailed.
+
 1. **Contracts** — find them all, wide before deep. Every outward-facing surface is
    one. Docs: site, statute, a deck, a client contract (the gives side); the budget
-   (the gets side).
+   (the gets side). Finish and confirm contracts before any node.
 2. **Nodes** — take the org chart, remap it onto the contracts, sort core / service
    / platform. (The org chart is how they're arranged; the contracts are what
    matters. Map the first onto the second, not the reverse.)

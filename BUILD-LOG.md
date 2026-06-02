@@ -39,8 +39,12 @@ its tests pass. Current status at the bottom.
 ## Experience
 
 - Streaming replies; chat persistence (chats are sources) with **date→topic titles**
-  and **delete** (the `log.md` audit is left intact); document upload (text/md as
-  well as images via vision).
+  and **delete** (the `log.md` audit is left intact); document upload — text/md and
+  images (vision), and **PDF via the Anthropic Files API** (upload once, reference by
+  `file_id`, no per-request size limit; files beta sent only on calls that use it).
+- The open language spec (`LANGUAGE.md`) the agent applies, and the agent prompt
+  wired to it (the agent as the bridge org→language); analysis layer designed in
+  `ANALYSIS.md`.
 - Welcome screen; a **constellation** brand mark (favicon · welcome · topbar);
   custom, keyboard-accessible controls (the Select is portalled — no clipping,
   scrolls, flips up; drawn radios; custom file uploader).
@@ -54,9 +58,9 @@ GitHub support was briefly removed and then reinstated as full read+write — th
 current state is the latter. The app was extracted from a private working repo into
 its own public repo (`Play-New/org`) on 2026-06-01; the code is generic.
 
-## Status (2026-06-01)
+## Status (2026-06-02)
 
-`tsc` clean · `eslint` clean · **85 tests** (22 files) · `vite build` clean · PWA
+`tsc` clean · `eslint` clean · **92 tests** · `vite build` clean · PWA
 generated · deployed at https://play-new.github.io/org/.
 
 The one thing tests can't cover is the live agent loop — it needs a real Anthropic

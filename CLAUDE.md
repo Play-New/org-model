@@ -17,6 +17,14 @@ things:
 The lens, in one line: *an organization = the promises it keeps to the world + the
 parts inside that keep them.* As-is only — never should-be in the structure.
 
+The language the agent applies — what an org is, the contract and its form, the
+nodes — is specified openly in **`LANGUAGE.md`** (cites Cicero / Boundaryless +
+Promise Theory). The agent doesn't invent a framework per company; it applies that
+fixed language and is the **bridge** that contextualizes it to the org from its
+documents (the system prompt opens on this). The whole system is **two things**:
+*the model* (the language applied to one org) and *the capabilities* that act on it —
+mapping now, analysis next (`ANALYSIS.md`, designed not built).
+
 **Generic by design.** Nothing about any specific org is hardcoded: brand (name,
 logo), languages, model — all come from the first-run wizard at runtime. (Extracted
 on 2026-06-01 from a private working repo into its own repo; the code is generic —
@@ -62,18 +70,25 @@ constants when a newer Opus/Sonnet ships (one place).
 
 - `pnpm install`
 - `pnpm dev` — open in a Chromium browser (Edge / Chrome; needs File System Access)
-- `pnpm test` — unit + engine-level e2e (mocked LLM); **85 tests**
+- `pnpm test` — unit + engine-level e2e (mocked LLM); **92 tests**
 - `pnpm lint` · `pnpm build` (static bundle + PWA)
 
-## State as of 2026-06-01 (all green: tsc · lint · 85 tests · build + PWA)
+## State as of 2026-06-02 (all green: tsc · lint · 92 tests · build + PWA)
 
 Done and working:
-- Wizard → connect (folder **or** GitHub) → 3-pane shell (Org / Chat / Workspace),
-  brand from config, responsive + phone bottom-nav.
-- Chat: streaming replies, diff-card gate, vision + **document upload** (text/md),
-  chat persistence (chats are sources), **date→topic titles**, **delete chat**
-  (keeps `log.md`), jump-to-bottom, auto-grow composer.
-- Map: react-flow, kind columns, colour legend, click-to-select.
+- Welcome screen ("Welcome to your organization.") → wizard → connect (folder **or**
+  GitHub) → 3-pane shell (Org / Chat / Workspace), brand from config, responsive +
+  phone bottom-nav. Full 6-language i18n; UI follows the chat language.
+- Chat: streaming replies, diff-card gate, vision + **document upload** — text/md
+  inline, and **PDF via the Anthropic Files API** (upload once, reference by
+  `file_id`, no per-request size limit; the files beta is sent only on calls that
+  use it — `usesFiles` in `agent/anthropic-map.ts`). Chat persistence (chats are
+  sources), **date→topic titles**, **delete chat** (keeps `log.md`), jump-to-bottom,
+  auto-grow composer. The agent works **one stage at a time** (contracts complete
+  before nodes) and writes Zeno-style prose: frontmatter + agentic body,
+  `org-gives`/`org-gets`, five legal-document `##` sections.
+- Map: react-flow, constellation palette (rose / peri / violet), kind columns,
+  colour legend, click-to-select.
 - Settings dialog; **language-change warning** (existing content won't auto-translate);
   custom keyboard-accessible Select (portalled — no clipping, scrolls, flips).
 - Brand mark = a constellation (favicon, welcome, topbar). Welcome screen.
@@ -87,12 +102,18 @@ the new source) and a **"Disconnect & reset"** action in settings
 (`forgetConnection` + `clearApiKey` + `clearGithubToken` + reload).
 
 Pending follow-up (needs you):
+- **Office extractors** (docx via mammoth, xlsx via SheetJS, pptx via JSZip) —
+  requested; PDF is done via the Files API, Office is not yet wired.
+- **Analysis capability** (`ANALYSIS.md`) — designed, not built; open product
+  questions (granularity, output form, cadence) await alignment.
 - **Live browser pass** — a real Anthropic key (and, for GitHub, a repo + a
   fine-grained PAT with Contents: Read and write). The native folder/file pickers
   are OS dialogs — not automatable; the engine is covered deterministically instead.
 
 ## Docs map
 
+- `LANGUAGE.md` — the open spec of the language the agent applies (contracts + nodes).
+- `ANALYSIS.md` — design of the next capability (commoditization → AI-native).
 - `APP-SPEC.md` — the UI surface.
 - `AGENT-SPEC.md` — the model + how the agent reasons.
 - `ARCHITECTURE.md` — storage (local + GitHub), security, sync.
