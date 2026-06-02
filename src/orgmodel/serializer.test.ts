@@ -20,7 +20,7 @@ describe('serializer round-trip', () => {
   it('preserves a citation locator', () => {
     const c = m.contracts[0];
     const back = parseContract(contractToMarkdown(c));
-    expect(back.measures.give[0].sources[0]).toEqual({ sourceId: 'site', locator: 'work' });
+    expect(back.sources[0]).toEqual({ sourceId: 'site', locator: 'work' });
   });
 
   it('detects the item type from frontmatter', () => {

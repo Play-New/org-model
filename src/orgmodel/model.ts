@@ -27,7 +27,8 @@ export interface Citation {
 export interface Measure {
   what: string; // what is measured (e.g. "€ raccolti", "ricerche finanziate")
   value?: string; // the observed value today, once known
-  sources: Citation[];
+  // No per-measure sources: the contract cites its sources once (Contract.sources),
+  // and each specific figure is cited inline in the prose note.
 }
 
 /* ---------------------------------------------------------------------- */

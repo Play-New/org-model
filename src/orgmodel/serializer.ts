@@ -46,21 +46,17 @@ function strToCitations(v: unknown): Citation[] {
 interface MeasureOnDisk {
   what: string;
   value?: string;
-  sources: string[];
 }
 
 function measureToDisk(m: Measure): MeasureOnDisk {
-  const out: MeasureOnDisk = { what: m.what, sources: citationsToStr(m.sources) };
+  const out: MeasureOnDisk = { what: m.what };
   if (m.value !== undefined) out.value = m.value;
   return out;
 }
 
 function diskToMeasure(v: unknown): Measure {
   const o = (v ?? {}) as Record<string, unknown>;
-  const m: Measure = {
-    what: typeof o.what === 'string' ? o.what : '',
-    sources: strToCitations(o.sources),
-  };
+  const m: Measure = { what: typeof o.what === 'string' ? o.what : '' };
   if (typeof o.value === 'string') m.value = o.value;
   return m;
 }
@@ -101,12 +97,12 @@ export function contractToMarkdown(c: Contract): string {
     id: c.id,
     type: 'contract',
     with: c.withParty,
-    gives: c.give,
-    gets: c.get,
+    'org-gives': c.give,
+    'org-gets': c.get,
     constraints: c.constraints,
     measures: {
-      gives: c.measures.give.map(measureToDisk),
-      gets: c.measures.get.map(measureToDisk),
+      'org-gives': c.measures.give.map(measureToDisk),
+      'org-gets': c.measures.get.map(measureToDisk),
     },
     ...(c.health ? { health: c.health } : {}),
     sources: citationsToStr(c.sources),
@@ -122,12 +118,12 @@ export function parseContract(md: string): Contract {
   return {
     id: str(data.id),
     withParty: str(data.with),
-    give: str(data.gives),
-    get: str(data.gets),
+    give: str(data['org-gives'] ?? data.gives),
+    get: str(data['org-gets'] ?? data.gets),
     constraints: strArray(data.constraints),
     measures: {
-      give: diskToMeasures(measures.gives),
-      get: diskToMeasures(measures.gets),
+      give: diskToMeasures(measures['org-gives'] ?? measures.gives),
+      get: diskToMeasures(measures['org-gets'] ?? measures.gets),
     },
     ...(typeof data.health === 'string'
       ? { health: data.health as ContractHealth }

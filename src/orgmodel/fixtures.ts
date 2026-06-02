@@ -19,10 +19,10 @@ export function cleanModel(): OrgModel {
         get: 'fees',
         constraints: ['agreed scope', 'deadlines'],
         measures: {
-          give: [{ what: 'projects shipped', value: '24/yr', sources: [{ sourceId: 'site', locator: 'work' }] }],
-          get: [{ what: 'revenue', value: '€1.2M', sources: [{ sourceId: 'accounts' }] }],
+          give: [{ what: 'projects shipped', value: '24/yr' }],
+          get: [{ what: 'revenue', value: '€1.2M' }],
         },
-        sources: [{ sourceId: 'site' }, { sourceId: 'accounts' }],
+        sources: [{ sourceId: 'site', locator: 'work' }, { sourceId: 'accounts' }],
       },
       {
         id: 'partners',
@@ -31,8 +31,8 @@ export function cleanModel(): OrgModel {
         get: 'leads and extra capacity',
         constraints: ['quality bar'],
         measures: {
-          give: [{ what: 'joint projects', sources: [{ sourceId: 'contract-doc' }] }],
-          get: [{ what: 'referred leads', sources: [{ sourceId: 'contract-doc' }] }],
+          give: [{ what: 'joint projects' }],
+          get: [{ what: 'referred leads' }],
         },
         sources: [{ sourceId: 'contract-doc' }],
       },

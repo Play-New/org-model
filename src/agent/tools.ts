@@ -37,7 +37,7 @@ function measures(v: unknown): Measure[] {
   if (!Array.isArray(v)) return [];
   return v.map((raw): Measure => {
     const o = (raw ?? {}) as Record<string, unknown>;
-    const m: Measure = { what: str(o.what), sources: cites(o.sources) };
+    const m: Measure = { what: str(o.what) };
     if (typeof o.value === 'string') m.value = o.value;
     return m;
   });
@@ -48,10 +48,13 @@ function toContract(i: Record<string, unknown>): Contract {
   const c: Contract = {
     id: str(i.id),
     withParty: str(i.with ?? i.withParty),
-    give: str(i.gives ?? i.give),
-    get: str(i.gets ?? i.get),
+    give: str(i['org-gives'] ?? i.gives ?? i.give),
+    get: str(i['org-gets'] ?? i.gets ?? i.get),
     constraints: strArr(i.constraints),
-    measures: { give: measures(m.gives ?? m.give), get: measures(m.gets ?? m.get) },
+    measures: {
+      give: measures(m['org-gives'] ?? m.gives ?? m.give),
+      get: measures(m['org-gets'] ?? m.gets ?? m.get),
+    },
     sources: cites(i.sources),
   };
   if (typeof i.health === 'string') c.health = i.health as Contract['health'];
@@ -136,7 +139,7 @@ const measureSchema = {
   type: 'array',
   items: {
     type: 'object',
-    properties: { what: { type: 'string' }, value: { type: 'string' }, sources: citationsSchema },
+    properties: { what: { type: 'string' }, value: { type: 'string' } },
     required: ['what'],
   },
 };
@@ -154,15 +157,15 @@ export const TOOL_DEFS: ToolDef[] = [
       type: 'object',
       properties: {
         id: { type: 'string' },
-        with: { type: 'string', description: 'the outside party' },
-        gives: { type: 'string', description: 'what the org gives them' },
-        gets: { type: 'string', description: 'what comes back that sustains the org' },
-        constraints: { type: 'array', items: { type: 'string' } },
-        measures: { type: 'object', properties: { gives: measureSchema, gets: measureSchema } },
-        note: { type: 'string', description: 'human-readable prose body (markdown): a short lead + one or two ## sub-headings, with inline (source-id) citations. This is what a person reads — write it in the model language.' },
+        with: { type: 'string', description: 'the outside party (short — just the party name)' },
+        'org-gives': { type: 'string', description: 'what the organization gives this party' },
+        'org-gets': { type: 'string', description: 'what comes back to the organization from this party' },
+        constraints: { type: 'array', items: { type: 'string' }, description: 'the rules/terms that must hold, or the contract breaks' },
+        measures: { type: 'object', properties: { 'org-gives': measureSchema, 'org-gets': measureSchema } },
+        note: { type: 'string', description: 'human-readable prose body (markdown), like a short legal-document narrative — see the prompt for the required sections. Write it in the model language, with inline (source-id) citations.' },
         sources: citationsSchema,
       },
-      required: ['id', 'with', 'gives', 'gets', 'note'],
+      required: ['id', 'with', 'org-gives', 'org-gets', 'note'],
     },
   },
   {

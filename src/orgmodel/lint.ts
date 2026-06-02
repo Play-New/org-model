@@ -20,11 +20,7 @@ export interface LintFinding {
 }
 
 function contractCitations(c: Contract): string[] {
-  const ids = c.sources.map(s => s.sourceId);
-  for (const m of [...c.measures.give, ...c.measures.get]) {
-    for (const s of m.sources) ids.push(s.sourceId);
-  }
-  return ids;
+  return c.sources.map(s => s.sourceId);
 }
 
 export function lint(m: OrgModel, knownSourceIds: Set<string>): LintFinding[] {
