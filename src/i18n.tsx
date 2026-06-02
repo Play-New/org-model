@@ -34,12 +34,12 @@ const S = (en: string, it: string, es: string, fr: string, de: string, pt: strin
 export const STRINGS: Record<string, Entry> = {
   // ---- Welcome ----
   'welcome.headline': S(
-    'This is your |organization.',
-    'Questa è la tua |organizzazione.',
-    'Esta es tu |organización.',
-    'Voici votre |organisation.',
-    'Das ist deine |Organisation.',
-    'Esta é a sua |organização.',
+    'Welcome to your |organization.',
+    'Benvenuto nella tua |organizzazione.',
+    'Bienvenido a tu |organización.',
+    'Bienvenue dans votre |organisation.',
+    'Willkommen in deiner |Organisation.',
+    'Bem-vindo à sua |organização.',
   ),
   'welcome.lead': S(
     'The promises it keeps to the world, and the parts inside that keep them — mapped from your own documents, guided by an agent.',
