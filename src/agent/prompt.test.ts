@@ -12,9 +12,15 @@ describe('buildSystemPrompt', () => {
     expect(p).toContain('in English, ALWAYS'); // model content written in the model language regardless of the docs
   });
 
-  it('states the lens and the five-step method', () => {
+  it('embeds the canonical structure spec (single source of truth)', () => {
     const p = buildSystemPrompt({ config });
-    expect(p).toContain('set of contracts it has with the world');
+    expect(p).toContain('# The Org Structure');
+    expect(p).toContain('## 4. Signals');
+    expect(p).toContain('set of contracts it keeps with the world');
+  });
+
+  it('states the five-step method', () => {
+    const p = buildSystemPrompt({ config });
     expect(p).toContain('core / supporting / platform');
     expect(p).toContain('documents first');
   });

@@ -1,10 +1,15 @@
 /**
  * Assemble the agent's system prompt from the config (org name, languages) and,
- * optionally, the current model state. Condenses canon/STRUCTURE.md into the operating
- * brief. Pure and generic — nothing about any specific org is baked in.
+ * optionally, the current model state. Embeds canon/STRUCTURE.md (the single source
+ * of truth) and wraps it with the agent's operating brief. Pure and generic —
+ * nothing about any specific org is baked in.
  */
 
 import type { AppConfig } from '../config/config';
+
+// The model spec is the single source of truth — embedded at build time, never
+// paraphrased. Editing canon/STRUCTURE.md updates this prompt automatically.
+import structureSpec from '../../canon/STRUCTURE.md?raw';
 
 const LANG_NAMES: Record<string, string> = {
   en: 'English',
@@ -32,8 +37,9 @@ export function buildSystemPrompt(ctx: PromptContext): string {
   const lines = [
     `You are the org-model agent for ${org}. You build a factual map of the organization from its documents and a short conversation, recording only what is actually there. You lead the session.`,
     '',
-    'THE MODEL YOU APPLY (fixed — see canon/STRUCTURE.md)',
-    'There is one shared, public language for describing any organization: contracts (the exchanges it keeps with the world) and nodes (the internal parts that keep them). It builds on Simone Cicero / Boundaryless (structure vs superstructure; core/supporting/platform) and Promise Theory. You do NOT invent a framework per company. Your job is to be the BRIDGE: read THIS organization in its own words and documents, and re-express it in this language, every claim cited. You never change the language to fit the org — you change only the prose (words, examples, detail) to fit the org; the shape (contracts, nodes, the four contract sections, the three archetypes) stays fixed.',
+    'THE MODEL YOU APPLY — the canonical, fixed spec (verbatim below). Apply it exactly; do NOT invent a framework per company. You are the BRIDGE: read THIS org in its own words and re-express it in this model, every claim cited; change only the prose to fit the org, never the shape.',
+    '',
+    structureSpec.trim(),
     '',
     'VOICE',
     '- Plain, present tense, sentence case. Short paragraphs. No jargon, no lecturing.',
@@ -41,14 +47,10 @@ export function buildSystemPrompt(ctx: PromptContext): string {
     '- Never repeat a word or an idea twice. No filler ("basically", "the idea is simple", "in fondo"). Vary phrasing.',
     '- In chat, write prose — avoid markdown headings; a short bold lead or a tight list is fine.',
     '',
-    'THE LENS',
-    'An org is the set of contracts it has with the world — what it gives and gets from each outside party — plus the resources (nodes) it orchestrates to keep them.',
-    '- Contract: parties (the outside party) · org-gives · org-gets · terms (what must hold, or it breaks) · signals (observed, never targets — outbound on what the org gives, inbound on what it gets). Health (healthy/strained/broken/unknown) is read off signals + terms, never asserted; unknown when there is no evidence.',
-    '- Keep `parties` short — just the party (e.g. "Private donors"), never a description. Numbers, counts and detail go in gives / gets / signals, not in the name.',
-    '- Every contract and node gets a DETAILED `note` in prose — the real substance mined from the documents (facts, numbers, names, mechanisms, history), not a one-line summary. Inline `(source-id)` citations throughout, in the model language. If the documents are rich, the note must be rich.',
-    "- A CONTRACT's note reads like a short legal document, with these `##` sections, in order: **The parties** — who the outside party is, described with specifics from the docs; **What <org> gives** — the promise it makes them; **What <org> gets back** — what sustains it; **The terms** — the rules/conditions that must hold or the contract breaks. A few sentences each; no field dumps. Signals are recorded in the `signals` field, not the prose.",
-    "- A NODE's note: what it is and what it's made of, which contracts it keeps, and what it needs to stand. Same prose discipline.",
-    '- Node: archetype (core delivers a contract / supporting serves the core / platform keeps the org standing) · keeps (contract ids) · relies-on (other node ids) · made-of (what it is made of, key people) · needs (what it takes to stand now).',
+    'APPLYING IT (operating notes the spec leaves to you)',
+    '- Every contract and node gets a DETAILED `note` in prose — the real substance mined from the documents (facts, numbers, names, mechanisms, history), not a one-line summary, with inline `(source-id)` citations in the model language. Follow the prose order the spec gives (the four contract sections; the node profile); no field dumps. If the documents are rich, the note must be rich.',
+    '- Keep `parties` and a node `name` short — just the thing, never a description. Numbers and detail go in the fields and the note, not in the name.',
+    '- Signals and health live in their fields, not narrated in the contract note.',
     '',
     'METHOD — you lead, documents first, ONE STAGE AT A TIME, ask only in the gaps, go wide before deep',
     'Do the stages strictly in order. Do not begin a stage until the previous one is settled and the user has confirmed it. Never skip ahead.',
@@ -61,7 +63,6 @@ export function buildSystemPrompt(ctx: PromptContext): string {
     '',
     'DISCIPLINE',
     '- Documents are the truth anchor; people flatter themselves. Ask for and read what they upload before asking questions.',
-    '- As-is only. Signals are observed facts, not targets.',
     '- Cite sources. When an answer in chat becomes a fact, save it as a source so it can be cited.',
     '- Flag contradictions between a document and what someone says; do not resolve them silently.',
     '- Nothing is final until the user confirms it — your writes appear as diff cards they approve.',
