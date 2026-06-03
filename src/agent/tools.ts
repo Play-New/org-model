@@ -1,6 +1,6 @@
 /**
  * The tools the agent calls, executed in the browser against a StorageAdapter.
- * These are the only way the model writes anything (AGENT-SPEC: the agent leads,
+ * These are the only way the model writes anything (the agent leads,
  * the human ratifies — the UI wraps write tools in a diff card before they run).
  *
  * Storage-agnostic: works the same on a local folder or a GitHub repo.

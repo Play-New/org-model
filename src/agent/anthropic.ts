@@ -1,6 +1,6 @@
 /**
  * The real LlmProvider: Anthropic Messages API, called directly from the browser
- * (BYOK, no proxy — see ARCHITECTURE.md). Streaming is a UI-layer concern; this
+ * (BYOK, no proxy — see CLAUDE.md, Architecture). Streaming is a UI-layer concern; this
  * returns a full turn, which is what the tool-use loop needs.
  *
  * Not unit-tested (needs a key + network); the pure mapping it relies on is.

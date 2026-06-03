@@ -6,24 +6,29 @@ Read this first when resuming; it is the handoff anchor.
 ## What this is
 
 A **local-first, browser-only PWA** that helps anyone map their organization from
-scratch, guided by an agent, **document-first**, **no backend**. The model is two
-things:
+scratch, guided by an agent, **document-first**, **no backend**. The model is three
+things — two structural, one observational:
 
-- **Contracts** — what the org gives to, and gets from, each outside party.
-- **Nodes** — the parts inside that keep those contracts: **core** (delivers a
-  promise), **service** (serves the core), **platform** (keeps the whole thing
-  standing), with dependencies. Roles / people / activities live inside nodes.
+- **Contracts** — the exchanges with the world: `parties`, what the org gives / gets,
+  and `terms` (what must hold, or it breaks).
+- **Nodes** — the parts inside that keep them: **core** (delivers a promise),
+  **supporting** (serves the core), **platform** (keeps the whole thing standing),
+  with dependencies (`keeps` contracts / `relies on` nodes). People and activities
+  live inside nodes.
+- **Signals** — the observed state: inbound / outbound, tracked over time → a
+  contract's **health** (`healthy / strained / broken / unknown`, read off, never
+  asserted).
 
 The lens, in one line: *an organization = the promises it keeps to the world + the
-parts inside that keep them.* As-is only — never should-be in the structure.
+parts inside that keep them; the signals tell whether it is holding.* As-is only —
+never should-be in the structure; interpretation lives in `canon/ANALYSIS.md`.
 
-The language the agent applies — what an org is, the contract and its form, the
-nodes — is specified openly in **`LANGUAGE.md`** (cites Cicero / Boundaryless +
-Promise Theory). The agent doesn't invent a framework per company; it applies that
-fixed language and is the **bridge** that contextualizes it to the org from its
-documents (the system prompt opens on this). The whole system is **two things**:
-*the model* (the language applied to one org) and *the capabilities* that act on it —
-mapping now, analysis next (`ANALYSIS.md`, designed not built).
+The full open spec is **`canon/STRUCTURE.md`** (cites Cicero / Boundaryless + Promise
+Theory). The agent doesn't invent a framework per company; it applies that fixed
+description and is the **bridge** that contextualizes it from the org's documents
+(the system prompt opens on this). The map reveals, on its own: which resource the
+org really runs on, single points of failure, core-vs-platform weight, where the
+promise is louder than the delivery, and who gets the value vs who pays.
 
 **Generic by design.** Nothing about any specific org is hardcoded: brand (name,
 logo), languages, model — all come from the first-run wizard at runtime. (Extracted
@@ -50,7 +55,7 @@ any org can open it.)
 7. **All UI strings go through i18n** (`src/i18n.tsx`) — one dictionary, six
    languages (en · it · es · fr · de · pt). The interface follows the *chat*
    language (`modelLanguage` is separate). Deliberately kept literal across
-   languages: `Org/`, `core`, `service`, `platform`, `log`. A guard test asserts
+   languages: `Org/`, `core`, `supporting`, `platform`, `log`. A guard test asserts
    every key is present in all six.
 
 ## Stack
@@ -66,6 +71,17 @@ pinned in `agent/anthropic.ts`. From the 4.6 generation on there is **no evergre
 "-latest" alias** — these are pinned snapshots, so "always latest" = bump those two
 constants when a newer Opus/Sonnet ships (one place).
 
+## Architecture (no backend)
+
+The app is a static bundle; an org is a set of files; they meet in the browser. The
+app never contains an org, an org never contains the app. Both storage sources sit
+behind one `StorageAdapter` — a **local folder** (File System Access, handle in
+IndexedDB) or a **GitHub repo** (REST Contents + Trees, UTF-8 base64, per-path SHA
+cache, 409 retry; each save is a commit). On disk an org is plain markdown:
+`contracts/`, `nodes/`, `sources/` (raw documents + chat transcripts, never
+hand-edited), `org-model.json` (identity), `log.md` (audit). The map rebuilds from
+the files alone; `connect.ts` remembers the source and reconnects silently.
+
 ## Run / verify
 
 - `pnpm install`
@@ -73,51 +89,52 @@ constants when a newer Opus/Sonnet ships (one place).
 - `pnpm test` — unit + engine-level e2e (mocked LLM); **97 tests**
 - `pnpm lint` · `pnpm build` (static bundle + PWA)
 
-## State as of 2026-06-02 (all green: tsc · lint · 97 tests · build + PWA)
+## State (code green as of 2026-06-02: tsc · lint · 97 tests · build + PWA)
 
 Done and working:
-- Welcome screen ("Welcome to your organization.") → wizard → connect (folder **or**
-  GitHub) → 3-pane shell (Org / Chat / Workspace), brand from config, responsive +
-  phone bottom-nav. Full 6-language i18n; UI follows the chat language.
+- Welcome screen → wizard → connect (folder **or** GitHub) → 3-pane shell (Org / Chat
+  / Workspace), brand from config, responsive + phone bottom-nav. Full 6-language
+  i18n; UI follows the chat language.
 - Chat: streaming replies, diff-card gate, vision + **document upload** — text/md
-  inline, **PDF via the Anthropic Files API** (upload once, reference by `file_id`,
-  no per-request size limit; the files beta is sent only on calls that use it —
-  `usesFiles` in `agent/anthropic-map.ts`), and **Office (docx / xlsx / pptx)**
-  extracted to text in the browser (mammoth / SheetJS / JSZip, lazy-loaded —
-  `ui/extractOffice.ts`). Chat persistence (chats are
-  sources), **date→topic titles**, **delete chat** (keeps `log.md`), jump-to-bottom,
-  auto-grow composer. The agent works **one stage at a time** (contracts complete
-  before nodes) and writes Zeno-style prose: frontmatter + agentic body,
-  `org-gives`/`org-gets`, five legal-document `##` sections.
-- Map: react-flow, constellation palette (rose / peri / violet), kind columns,
-  colour legend, click-to-select.
-- Settings dialog; **language-change warning** (existing content won't auto-translate);
-  custom keyboard-accessible Select (portalled — no clipping, scrolls, flips).
-- Brand mark = a constellation (favicon, welcome, topbar). Welcome screen.
-- **GitHub read+write**: `GitHubAdapter` (Contents + Trees API, UTF-8 base64, SHA
-  cache, 409 retry), token encrypted, wizard connect UI with token instructions +
-  link. Engine e2e over a mocked GitHub (`agent/github-session.test.ts`).
-
-Also done: **settings-side source management** (a shared `SourceConnect` component
-drives both the wizard and settings — switch folder / repo / token, reloads onto
-the new source) and a **"Disconnect & reset"** action in settings
-(`forgetConnection` + `clearApiKey` + `clearGithubToken` + reload).
+  inline, **PDF via the Anthropic Files API** (upload once, reference by `file_id`;
+  the files beta is sent only on calls that use it — `usesFiles` in
+  `agent/anthropic-map.ts`), and **Office (docx / xlsx / pptx)** extracted to text in
+  the browser (mammoth / SheetJS / JSZip, lazy-loaded — `ui/extractOffice.ts`). Chat
+  persistence (chats are sources), date→topic titles, delete chat (keeps `log.md`),
+  jump-to-bottom, auto-grow composer. The agent works **one stage at a time**
+  (contracts complete before nodes) and writes cited Zeno-style prose.
+- Map: react-flow, constellation palette (rose / peri / violet), kind columns, colour
+  legend, click-to-select.
+- Settings dialog; language-change warning; custom keyboard-accessible Select
+  (portalled). Settings-side source management (shared `SourceConnect`) +
+  "Disconnect & reset". Constellation brand mark (favicon · welcome · topbar).
+- **GitHub read+write**: `GitHubAdapter`, token encrypted, wizard connect UI. Engine
+  e2e over a mocked GitHub (`agent/github-session.test.ts`).
 
 Pending follow-up (needs you):
-- **Analysis capability** (`ANALYSIS.md`) — designed, not built; open product
+- **Code sweep — align code to `canon/STRUCTURE.md`.** The spec was reworked; the code
+  is not yet. Renames: `with→parties`, `constraints→terms`, `measures→signals`
+  (+`unknown` health), `orientation→archetype`, `service→supporting`,
+  `supports→keeps`, `dependsOn→relies on`, `composition→made of`, `needsToday→needs`;
+  contract prose 5→4 sections, node a 5-part profile. Decided light: `parties` stays a
+  single counterpart, `signals` stay a single observed value with the trajectory in
+  prose (full multi-party + time-series are later). Parsers read old keys too.
+- **Analysis capability** (`canon/ANALYSIS.md`) — designed, not built; open product
   questions (granularity, output form, cadence) await alignment.
-- **Live browser pass** — a real Anthropic key (and, for GitHub, a repo + a
-  fine-grained PAT with Contents: Read and write). The native folder/file pickers
-  are OS dialogs — not automatable; the engine is covered deterministically instead.
+- **Batched commits** — today each write is its own commit; a per-turn commit (Git
+  Data API: blobs → tree → commit) would be tidier. Not needed to ship.
+- **Live browser pass** — a real Anthropic key (and, for GitHub, a fine-grained PAT
+  with Contents: Read and write). The native folder/file pickers are OS dialogs, not
+  automatable; the engine is covered deterministically instead.
 
 ## Docs map
 
-- `LANGUAGE.md` — the open spec of the language the agent applies (contracts + nodes).
-- `ANALYSIS.md` — design of the next capability (commoditization → AI-native).
-- `APP-SPEC.md` — the UI surface.
-- `AGENT-SPEC.md` — the model + how the agent reasons.
-- `ARCHITECTURE.md` — storage (local + GitHub), security, sync.
-- `BUILD-LOG.md` — what was built, in order.
+- **`canon/STRUCTURE.md`** — the open spec of the model: contracts · nodes · signals.
+- **`canon/ANALYSIS.md`** — design of the next capability (commoditization → AI-native).
+- **`README.md`** — the public entry.
+
+Agent behavior is the system prompt (`src/agent/prompt.ts`); the UI surface and
+storage details live in the code, not in a separate spec.
 
 ## Demo material (local)
 

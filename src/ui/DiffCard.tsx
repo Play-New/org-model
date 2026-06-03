@@ -1,4 +1,4 @@
-/** A proposed write, shown for approval before it touches disk (AGENT-SPEC posture). */
+/** A proposed write, shown for approval before it touches disk (the LLM is the only writer). */
 
 import { useT } from '../i18n';
 

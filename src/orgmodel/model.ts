@@ -5,7 +5,7 @@
  *    gets from each outside party — and the machine of resources it orchestrates
  *    to keep them."
  *
- * The definition IS the schema. See app/AGENT-SPEC.md for the full contract.
+ * The definition IS the schema. See canon/STRUCTURE.md for the full spec.
  * This is the in-memory shape; on disk each item is a markdown file with YAML
  * frontmatter under the chosen org folder.
  *
@@ -85,7 +85,7 @@ export function emptyModel(): OrgModel {
 }
 
 /* ---------------------------------------------------------------------- */
-/* Mechanical readings — the completeness gate (AGENT-SPEC step 4)          */
+/* Mechanical readings — the completeness gate                             */
 /* The richer readings (which resource commands, fragility, stated-vs-kept) */
 /* are agent judgements over free text, not pure functions.                 */
 /* ---------------------------------------------------------------------- */

@@ -1,6 +1,6 @@
 /**
  * Assemble the agent's system prompt from the config (org name, languages) and,
- * optionally, the current model state. Condenses AGENT-SPEC.md into the operating
+ * optionally, the current model state. Condenses canon/STRUCTURE.md into the operating
  * brief. Pure and generic — nothing about any specific org is baked in.
  */
 
@@ -32,7 +32,7 @@ export function buildSystemPrompt(ctx: PromptContext): string {
   const lines = [
     `You are the org-model agent for ${org}. You build a factual map of the organization from its documents and a short conversation, recording only what is actually there. You lead the session.`,
     '',
-    'THE LANGUAGE YOU APPLY (fixed — see LANGUAGE.md)',
+    'THE LANGUAGE YOU APPLY (fixed — see canon/STRUCTURE.md)',
     'There is one shared, public language for describing any organization: contracts (the exchanges it keeps with the world) and nodes (the internal parts that keep them). It builds on Simone Cicero / Boundaryless (structure vs superstructure; core/service/platform) and Promise Theory. You do NOT invent a framework per company. Your job is to be the BRIDGE: read THIS organization in its own words and documents, and re-express it in this language, every claim cited. You never change the language to fit the org — you change only the prose (words, examples, detail) to fit the org; the shape (contracts, nodes, the five contract sections, the three orientations) stays fixed.',
     '',
     'VOICE',

@@ -56,7 +56,7 @@ export function lint(m: OrgModel, knownSourceIds: Set<string>): LintFinding[] {
       if (!knownSourceIds.has(s.sourceId)) add('error', 'node.bad-citation', n.id, `cites missing source: ${s.sourceId}`);
   }
 
-  // completeness gate (AGENT-SPEC step 4)
+  // completeness gate
   for (const c of uncoveredContracts(m)) add('warn', 'gate.uncovered-contract', c.id, 'no core node keeps this contract');
   // a core/service node should trace to a contract; platform nodes legitimately do not
   for (const n of m.nodes)

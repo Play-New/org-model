@@ -57,21 +57,18 @@ REST API (a repo, read + write). LLM via the Anthropic SDK in the browser (BYOK,
 proxy; key encrypted at rest), with the web-search tool and vision. react-flow for
 the map. Installable as a PWA.
 
-## The language
+## The model
 
 The agent does not invent a framework per company. It applies **one shared, public
-language** for describing any organization — contracts and nodes — and contextualizes
-it from your documents. That language is specified, open and citeable, in
-**[LANGUAGE.md](LANGUAGE.md)** (built on Simone Cicero / Boundaryless and Promise
-Theory). The system is two things: **the model** (this language applied to your org)
-and **the capabilities** that act on it — mapping today, analysis next.
+description** of any organization — its contracts, the nodes that keep them, and the
+signals that read their health — and contextualizes it from your documents. It's
+specified, open and citeable, in **[canon/STRUCTURE.md](canon/STRUCTURE.md)** (built
+on Simone Cicero / Boundaryless and Promise Theory). Interpreting the map —
+commoditization, value migration — is the next capability, designed in
+**[canon/ANALYSIS.md](canon/ANALYSIS.md)**.
 
 ## Docs
 
-- **[LANGUAGE.md](LANGUAGE.md)** — the open spec of the language the agent applies: what an organization is (contracts + nodes), and the agent as the bridge to it.
-- **[ANALYSIS.md](ANALYSIS.md)** — design of the next capability: reading commoditization → AI-native over the map (Wardley + Choudary). *Status: design.*
-- **AGENT-SPEC.md** — the model (contracts + nodes) and how the agent reasons.
-- **APP-SPEC.md** — the UI surface.
-- **ARCHITECTURE.md** — storage (local + GitHub), security, sync.
+- **[canon/STRUCTURE.md](canon/STRUCTURE.md)** — the open spec: what an organization is (contracts · nodes · signals), and the agent as the bridge to it.
+- **[canon/ANALYSIS.md](canon/ANALYSIS.md)** — design of the next capability: reading commoditization → AI-native over the map. *Status: design.*
 - **CLAUDE.md** — resume handoff: current state, the hard rules, open follow-ups.
-- **BUILD-LOG.md** — what's built, in order.

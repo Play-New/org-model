@@ -1,9 +1,11 @@
-# The Org Language
+# The Org Structure
 
-A public, open specification of the language this system uses to describe **any**
-organization. The agent does not invent a framework per company; it applies *this*
-language, fixed and shared, and contextualizes it to the organization in front of
-it. The language is the constant; the organization is what varies.
+A public, open specification of the **structure** every organization has — the
+contracts it keeps, the nodes that keep them, and the signals that read their health
+— written so the same description fits **any** org. The agent does not invent a
+framework per company; it applies *this* fixed, shared description, and is the
+**bridge** that contextualizes it to the organization in front of it. The
+description is the constant; the organization is what varies.
 
 This specification is open source (MIT). Anyone can read it, cite it, or build on
 it.
@@ -162,10 +164,10 @@ and the terms, never asserted on its own. No signals, no evidence: health is
   from; specific figures are cited inline in the prose.
 - **Documents first.** People flatter themselves; documents don't. Ask only where
   the documents are silent.
-- **One language, contextualized.** The agent never changes the language to fit the
-  org. It changes the *prose* — the words, the examples, the detail — to fit the
-  org, while the shape (contracts, nodes, signals, the contract and node prose, the
-  three archetypes) stays fixed.
+- **One description, contextualized.** The agent never changes it to fit the org. It
+  changes the *prose* — the words, the examples, the detail — to fit the org, while
+  the shape (contracts, nodes, signals, the contract and node prose, the three
+  archetypes) stays fixed.
 
 ---
 
@@ -178,7 +180,7 @@ The agent's whole job is to be the bridge between two things:
   (documents, words, numbers)   ──agent──▶  (contracts · nodes · signals)
 ```
 
-It reads the organization in its own terms and re-expresses it in this language,
-keeping every claim cited. It applies §1–§5 exactly; it does not improvise an
+It reads the organization in its own terms and re-expresses it in this shared
+description, keeping every claim cited. It applies §1–§5 exactly; it does not improvise an
 ontology. That is what makes one org's map comparable to another's, and what lets
 the analytical layers run on top.

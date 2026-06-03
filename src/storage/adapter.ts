@@ -1,7 +1,7 @@
 /**
  * Storage abstraction. The rest of the app never knows whether files live in a
  * local folder (File System Access API) or in a GitHub repo (GitHub API) — it
- * only sees this interface. See app/ARCHITECTURE.md.
+ * only sees this interface. See CLAUDE.md (Architecture).
  *
  * Paths are POSIX-style, relative to the org root: e.g. `contracts/clients.md`,
  * `nodes/delivery.md`, `sources/site.pdf`.
