@@ -59,7 +59,7 @@ Vite 8 + React 19 + TypeScript, vanilla CSS. Anthropic SDK in the browser (BYOK,
 streaming, web-search tool, vision). `@xyflow/react` for the map. `idb-keyval` for
 the folder handle / connection / encrypted secrets. PWA via `vite-plugin-pwa`.
 Deployed once to GitHub Pages (`.github/workflows/deploy.yml`), opens any org.
-Live at https://play-new.github.io/org/.
+Live at https://org.playnew.com.
 
 **Model IDs**: Opus 4.8 (`claude-opus-4-8`) / Sonnet 4.6 (`claude-sonnet-4-6`),
 pinned in `agent/anthropic.ts`. From the 4.6 generation on there is **no evergreen

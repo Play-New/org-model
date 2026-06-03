@@ -6,7 +6,7 @@ into a model of **contracts** (what it gives and gets from each outside party) a
 **nodes** (core / service / platform, with dependencies), guided by an agent,
 documents first. No backend.
 
-**Live:** https://play-new.github.io/org/ · open in Chrome or Edge.
+**Live:** https://org.playnew.com · open in Chrome or Edge.
 
 ## What it does
 
@@ -23,13 +23,20 @@ GitHub repo**), and your Anthropic key (and GitHub token, if used) are **encrypt
 on your device**, never shown, never stored in the org. It's bring-your-own-key:
 the only network calls are the ones the agent makes to Anthropic on your behalf.
 
-## Run
+## Use it
+
+Nothing to install — just open **https://org.playnew.com** in Chrome or
+Edge. On first run a short wizard asks for languages · org name · logo · your
+Anthropic key · model, then you choose a **source** — a local folder, or a **GitHub
+repo** (read + write, where each save is a commit). It's bring-your-own-key and runs
+entirely in your browser.
+
+## Run locally (to develop)
+
+You only need this to modify the code:
 
 - `pnpm install`
 - `pnpm dev` — open in a Chromium browser (Edge / Chrome; needs File System Access)
-- First run: a short wizard (languages · org name · logo · Anthropic key · model),
-  then choose a **source** — a local folder, or a **GitHub repo** (read + write,
-  where each save is a commit).
 
 ## Verify
 
