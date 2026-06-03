@@ -60,8 +60,12 @@ export async function runAgent(opts: RunOptions): Promise<RunResult> {
     const results: ToolResultBlock[] = [];
     for (const tu of toolUses) {
       opts.onToolUse?.(tu.name, tu.input);
-      if (NEEDS_CONFIRM.has(tu.name) && opts.confirm) {
-        const ok = await opts.confirm(tu.name, tu.input);
+      if (NEEDS_CONFIRM.has(tu.name)) {
+        // Fail-closed: a write tool runs only if a confirm callback approves it.
+        // With no confirm wired, the write is rejected — this enforces the
+        // "LLM is the only writer, behind a confirm" rule even when a caller forgets
+        // to pass confirm.
+        const ok = opts.confirm ? await opts.confirm(tu.name, tu.input) : false;
         if (!ok) {
           results.push({ type: 'tool_result', tool_use_id: tu.id, content: 'rejected: the user did not approve this change' });
           continue;

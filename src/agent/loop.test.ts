@@ -32,6 +32,7 @@ describe('agent loop', () => {
       messages,
       ctx: { adapter },
       onToolUse: name => seen.push(name),
+      confirm: async () => true,
     });
 
     expect(seen).toEqual(['write_contract']);
@@ -65,7 +66,34 @@ describe('agent loop', () => {
     expect(res.turns).toBe(3);
   });
 
-  it('skips a write when confirm rejects it', async () => {
+  it('fail-closed: rejects a write tool when no confirm is provided', async () => {
+    const adapter = new MemoryAdapter();
+    const scripted: ProviderTurn[] = [
+      {
+        stopReason: 'tool_use',
+        content: [{ type: 'tool_use', id: 't1', name: 'write_node', input: { id: 'n', name: 'N', orientation: 'core' } }],
+      },
+      { stopReason: 'end_turn', content: [{ type: 'text', text: 'ok' }] },
+    ];
+    const res = await runAgent({
+      provider: new MockProvider(scripted),
+      system: 's',
+      messages: [{ role: 'user', content: [{ type: 'text', text: 'go' }] }],
+      ctx: { adapter },
+      // no confirm callback — the write must NOT execute
+    });
+    expect((await loadModel(adapter)).nodes).toHaveLength(0);
+    const rejected = res.messages.some(
+      m =>
+        m.role === 'user' &&
+        m.content.some(
+          b => b.type === 'tool_result' && b.content === 'rejected: the user did not approve this change',
+        ),
+    );
+    expect(rejected).toBe(true);
+  });
+
+  it('fail-closed: rejects a write tool when confirm returns false', async () => {
     const adapter = new MemoryAdapter();
     const scripted: ProviderTurn[] = [
       {

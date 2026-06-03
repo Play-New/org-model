@@ -39,7 +39,9 @@ export class AnthropicProvider implements LlmProvider {
   private readonly opts: AnthropicOptions;
 
   constructor(opts: AnthropicOptions) {
-    this.client = new Anthropic({ apiKey: opts.apiKey, dangerouslyAllowBrowser: true });
+    // maxRetries: 4 — the SDK retries 429 / 5xx / overloaded with exponential
+    // backoff. The default is 2; bump it for flaky BYOK-from-the-browser calls.
+    this.client = new Anthropic({ apiKey: opts.apiKey, dangerouslyAllowBrowser: true, maxRetries: 4 });
     this.opts = opts;
   }
 
@@ -49,16 +51,37 @@ export class AnthropicProvider implements LlmProvider {
     return (res as { id: string }).id;
   }
 
+  /**
+   * Build the request params shared by run() and runStream() so the two stay
+   * identical. Two prompt-caching breakpoints (max 4; render order is
+   * tools → system → messages):
+   *  (a) system as a one-block array — caches tools + system together;
+   *  (b) a rolling breakpoint on the last content block of the last message —
+   *      caches the growing conversation prefix.
+   * Adaptive thinking is on; with Opus 4.8 the thinking text is empty by default
+   * but the block + signature still round-trip (see anthropic-map).
+   */
+  private params(req: ProviderRequest): Record<string, unknown> {
+    const apiMessages = toApiMessages(req.messages);
+    const lastMsg = apiMessages[apiMessages.length - 1];
+    if (lastMsg && lastMsg.content.length > 0) {
+      const lastBlock = lastMsg.content[lastMsg.content.length - 1] as unknown as Record<string, unknown>;
+      lastBlock.cache_control = { type: 'ephemeral' };
+    }
+    return {
+      model: modelId(this.opts.model),
+      max_tokens: this.opts.maxTokens ?? 32000,
+      system: [{ type: 'text', text: req.system, cache_control: { type: 'ephemeral' } }],
+      thinking: { type: 'adaptive' },
+      // wire shapes are correct; cast isolates us from SDK param-type churn
+      messages: apiMessages as never,
+      tools: toApiTools(req.tools, this.opts.webSearch ?? true) as never,
+    };
+  }
+
   async run(req: ProviderRequest): Promise<ProviderTurn> {
     const res = await this.client.messages.create(
-      {
-        model: modelId(this.opts.model),
-        max_tokens: this.opts.maxTokens ?? 8192,
-        system: req.system,
-        // wire shapes are correct; cast isolates us from SDK param-type churn
-        messages: toApiMessages(req.messages) as never,
-        tools: toApiTools(req.tools, this.opts.webSearch ?? true) as never,
-      },
+      this.params(req) as never,
       usesFiles(req.messages) ? filesOpts : undefined,
     );
     return {
@@ -69,13 +92,7 @@ export class AnthropicProvider implements LlmProvider {
 
   async runStream(req: ProviderRequest, onDelta: (text: string) => void): Promise<ProviderTurn> {
     const stream = this.client.messages.stream(
-      {
-        model: modelId(this.opts.model),
-        max_tokens: this.opts.maxTokens ?? 8192,
-        system: req.system,
-        messages: toApiMessages(req.messages) as never,
-        tools: toApiTools(req.tools, this.opts.webSearch ?? true) as never,
-      },
+      this.params(req) as never,
       usesFiles(req.messages) ? filesOpts : undefined,
     );
     stream.on('text', (delta: string) => onDelta(delta));

@@ -58,12 +58,34 @@ describe('anthropic mapping', () => {
     expect(usesFiles(plain)).toBe(false);
   });
 
-  it('appends the web_search server tool when enabled', () => {
+  it('appends web_search + web_fetch server tools when enabled, neither when off', () => {
     const tools: ToolDef[] = [{ name: 'read_model', description: 'd', input_schema: { type: 'object' } }];
-    expect(toApiTools(tools, false)).toHaveLength(1);
-    const withSearch = toApiTools(tools, true);
-    expect(withSearch).toHaveLength(2);
-    expect(withSearch[1]).toMatchObject({ type: 'web_search_20250305', name: 'web_search' });
+    const off = toApiTools(tools, false);
+    expect(off).toHaveLength(1);
+    expect(off.some(t => t.name === 'web_search')).toBe(false);
+    expect(off.some(t => t.name === 'web_fetch')).toBe(false);
+
+    const on = toApiTools(tools, true);
+    expect(on).toHaveLength(3);
+    expect(on.find(t => t.name === 'web_search')).toMatchObject({ type: 'web_search_20260209', name: 'web_search' });
+    expect(on.find(t => t.name === 'web_fetch')).toMatchObject({ type: 'web_fetch_20260209', name: 'web_fetch' });
+  });
+
+  it('round-trips thinking blocks: kept on the way in, re-emitted before text on the way out', () => {
+    const blocks = fromApiContent([
+      { type: 'thinking', thinking: 't', signature: 'sig' },
+      { type: 'text', text: 'hi' },
+    ]);
+    expect(blocks).toEqual([
+      { type: 'thinking', thinking: 't', signature: 'sig' },
+      { type: 'text', text: 'hi' },
+    ]);
+
+    const wire = toApiMessages([{ role: 'assistant', content: blocks }]);
+    expect(wire[0].content).toEqual([
+      { type: 'thinking', thinking: 't', signature: 'sig' },
+      { type: 'text', text: 'hi' },
+    ]);
   });
 
   it('keeps only text and client tool_use from a response, dropping server blocks', () => {

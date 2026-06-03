@@ -59,7 +59,19 @@ export function Shell({ config, adapter, onOpenSettings }: ShellProps) {
 
       <div className="panes" data-mtab={mtab}>
         <aside className="pane pane--org">
-          <div className="pane__head">Org/</div>
+          <div className="pane__head">
+            <span>Org/</span>
+            {!readOnly && (
+              <div className="pane__actions">
+                <button className="chat__act" disabled={chat.busy} onClick={() => void chat.improve()} title={t('org.improve')}>
+                  {t('org.improve')}
+                </button>
+                <button className="chat__act" disabled={chat.busy} onClick={() => void chat.review()} title={t('org.review')}>
+                  {t('org.review')}
+                </button>
+              </div>
+            )}
+          </div>
           <div className="pane__body">
             {loading ? (
               <div className="pane__placeholder">{t('shell.loading')}</div>

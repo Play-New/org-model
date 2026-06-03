@@ -235,6 +235,7 @@ input, select, textarea { font: inherit; color: inherit; }
   font-size: var(--t-sm); font-weight: var(--w-medium);
   color: var(--fg-muted); border-bottom: 1px solid var(--panel-border);
 }
+.pane__actions { margin-left: auto; display: inline-flex; gap: 2px; }
 .pane__body { min-height: 0; overflow: auto; padding: var(--sp-3); }
 .pane__placeholder { color: var(--fg-faint); display: grid; place-items: center; font-style: italic; height: 100%; }
 

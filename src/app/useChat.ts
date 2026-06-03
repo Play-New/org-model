@@ -57,6 +57,10 @@ export interface ChatState {
   openThread: (id: string) => void;
   renameThread: (id: string, title: string) => void;
   deleteChat: (id: string) => void;
+  /** Run autoresearch over the whole model: lint → fix, each write behind the diff card. */
+  improve: () => Promise<void>;
+  /** Semantic review: the LLM reads the model for incoherence and reports it (read-only). */
+  review: () => Promise<void>;
 }
 
 const KICKOFF =
@@ -268,6 +272,72 @@ export function useChat(adapter: StorageAdapter, config: AppConfig, onModelChang
     });
   }, []);
 
+  // Append a status line into the current thread's display (not the protocol —
+  // it's a note to the human, not part of the LLM history).
+  const note = useCallback(
+    (text: string) => {
+      const cur = thread.current;
+      if (!cur) return;
+      const display = [...cur.display, { role: 'assistant' as const, text }];
+      thread.current = { ...cur, display };
+      setMessages(display);
+    },
+    [],
+  );
+
+  const improve = useCallback(async () => {
+    if (!thread.current || busy) return;
+    setBusy(true);
+    setError(null);
+    const lang = isLang(config.chatLanguage) ? config.chatLanguage : 'en';
+    try {
+      const { AnthropicProvider } = await import('../agent/anthropic');
+      const { improveUntilClean } = await import('../agent/autoresearch');
+      const provider = new AnthropicProvider({ apiKey: config.apiKey, model: config.model, webSearch: true });
+      const res = await improveUntilClean({
+        provider,
+        system: buildSystemPrompt({ config }),
+        adapter,
+        confirm: (name, input) => new Promise<boolean>(resolve => setPending({ name, input, resolve })),
+      });
+      note(res.clean ? translate(lang, 'org.improveClean') : translate(lang, 'org.improveDone', res.rounds, res.remaining));
+    } catch (e) {
+      console.error('[org] improve error:', e);
+      setError(humanizeError(e, k => translate(lang, k)));
+    } finally {
+      setBusy(false);
+      setPending(null);
+      await persist();
+      onModelChanged();
+    }
+  }, [adapter, busy, config, note, onModelChanged, persist]);
+
+  const review = useCallback(async () => {
+    if (!thread.current || busy) return;
+    setBusy(true);
+    setError(null);
+    const lang = isLang(config.chatLanguage) ? config.chatLanguage : 'en';
+    try {
+      const { AnthropicProvider } = await import('../agent/anthropic');
+      const { semanticFindings } = await import('../agent/review');
+      const provider = new AnthropicProvider({ apiKey: config.apiKey, model: config.model, webSearch: false });
+      const model = await loadModel(adapter);
+      const findings = await semanticFindings({ provider, system: buildSystemPrompt({ config }), model });
+      if (findings.length === 0) {
+        note(translate(lang, 'org.reviewClean'));
+      } else {
+        const body = findings.map(f => `- **${f.target || '—'}** (${f.kind}): ${f.message}`).join('\n');
+        note(`${translate(lang, 'org.reviewFound', findings.length)}\n\n${body}`);
+      }
+    } catch (e) {
+      console.error('[org] review error:', e);
+      setError(humanizeError(e, k => translate(lang, k)));
+    } finally {
+      setBusy(false);
+      await persist();
+    }
+  }, [adapter, busy, config, note, persist]);
+
   return {
     messages,
     busy,
@@ -281,5 +351,7 @@ export function useChat(adapter: StorageAdapter, config: AppConfig, onModelChang
     openThread: id => void openThread(id),
     renameThread: (id, title) => void renameThread(id, title),
     deleteChat: id => void deleteChat(id),
+    improve,
+    review,
   };
 }

@@ -86,10 +86,10 @@ the files alone; `connect.ts` remembers the source and reconnects silently.
 
 - `pnpm install`
 - `pnpm dev` — open in a Chromium browser (Edge / Chrome; needs File System Access)
-- `pnpm test` — unit + engine-level e2e (mocked LLM); **101 tests**
+- `pnpm test` — unit + engine-level e2e (mocked LLM); **108 tests**
 - `pnpm lint` · `pnpm build` (static bundle + PWA)
 
-## State (code green as of 2026-06-03: tsc · lint · 101 tests · build + PWA)
+## State (code green as of 2026-06-03: tsc · lint · 108 tests · build + PWA)
 
 Done and working:
 - Welcome screen → wizard → connect (folder **or** GitHub) → 3-pane shell (Org / Chat
@@ -105,6 +105,16 @@ Done and working:
   (contracts complete before nodes) and writes cited Zeno-style prose.
 - Map: react-flow, constellation palette (rose / peri / violet), kind columns, colour
   legend, click-to-select.
+- **Agent harness** (`agent/`): tool-use loop with a **fail-closed** confirm gate (a
+  write runs only if a confirm approves it); tools `read_model` / `write_contract` /
+  `write_node` / `save_source` / `append_log` + server-side **web_search + web_fetch**
+  (`web_*_20260209`); **prompt caching** (one breakpoint on system+tools, one rolling
+  on the conversation) and **adaptive thinking** (thinking blocks + signatures
+  round-trip through the loop) in `agent/anthropic.ts`; `maxRetries: 4` backoff.
+- Two model-wide actions in the Org/ pane header: **Improve** (`agent/autoresearch.ts`
+  — lint→fix rounds, each write behind the diff card) and **Review**
+  (`agent/review.ts` — **semantic lint**: the LLM flags incoherence the deterministic
+  lint can't see; read-only, posts findings to chat).
 - Settings dialog; language-change warning; custom keyboard-accessible Select
   (portalled). Settings-side source management (shared `SourceConnect`) +
   "Disconnect & reset". Constellation brand mark (favicon · welcome · topbar).

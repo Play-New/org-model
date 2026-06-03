@@ -22,7 +22,21 @@ export interface ToolUseBlock {
   input: Record<string, unknown>;
 }
 
-export type AssistantBlock = TextBlock | ToolUseBlock;
+/** Extended-thinking blocks. With adaptive thinking on Opus 4.8 the visible text
+ *  is empty by default, but the block + signature MUST round-trip back to the API
+ *  on the next turn alongside any tool_use, or it 400s. */
+export interface ThinkingBlock {
+  type: 'thinking';
+  thinking: string;
+  signature?: string;
+}
+
+export interface RedactedThinkingBlock {
+  type: 'redacted_thinking';
+  data: string;
+}
+
+export type AssistantBlock = TextBlock | ToolUseBlock | ThinkingBlock | RedactedThinkingBlock;
 
 export interface ToolResultBlock {
   type: 'tool_result';

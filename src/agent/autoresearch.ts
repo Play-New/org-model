@@ -56,6 +56,11 @@ export interface ImproveOptions {
   maxRounds?: number;
   tasksPerRound?: number;
   onRound?: (round: number, remaining: number) => void;
+  /** Called before each tool runs — the UI uses this for the diff card. */
+  onToolUse?: (name: string, input: Record<string, unknown>) => void;
+  /** Gate write tools: resolve true to apply, false to reject. With fail-closed
+   *  in loop.ts, autonomous improvement writes are rejected unless this is supplied. */
+  confirm?: (name: string, input: Record<string, unknown>) => Promise<boolean>;
 }
 
 export interface ImproveResult {
@@ -87,7 +92,14 @@ export async function improveUntilClean(opts: ImproveOptions): Promise<ImproveRe
       ...tasks.map(t => `- ${t.instruction}`),
     ].join('\n');
     const messages: Message[] = [{ role: 'user', content: [{ type: 'text', text: instruction }] }];
-    await runAgent({ provider: opts.provider, system: opts.system, messages, ctx: { adapter: opts.adapter } });
+    await runAgent({
+      provider: opts.provider,
+      system: opts.system,
+      messages,
+      ctx: { adapter: opts.adapter },
+      onToolUse: opts.onToolUse,
+      confirm: opts.confirm,
+    });
   }
 
   const remaining = (await findingsNow(opts.adapter)).length;
