@@ -8,24 +8,24 @@ describe('tools', () => {
     const a = new MemoryAdapter();
     const out = await runTool(
       'write_contract',
-      { id: 'clients', with: 'Clients', gives: 'work', gets: 'fees', sources: ['site'] },
+      { id: 'clients', parties: 'Clients', 'org-gives': 'work', 'org-gets': 'fees', sources: ['site'] },
       { adapter: a },
     );
     expect(out).toContain('clients');
 
     const model = await loadModel(a);
-    expect(model.contracts[0]).toMatchObject({ id: 'clients', withParty: 'Clients', give: 'work', get: 'fees' });
+    expect(model.contracts[0]).toMatchObject({ id: 'clients', parties: 'Clients', give: 'work', get: 'fees' });
     expect(model.contracts[0].sources).toEqual([{ sourceId: 'site' }]);
 
     const read = JSON.parse(await runTool('read_model', {}, { adapter: a }));
     expect(read.contracts).toHaveLength(1);
   });
 
-  it('write_node coerces orientation and persists', async () => {
+  it('write_node coerces archetype and persists', async () => {
     const a = new MemoryAdapter();
-    await runTool('write_node', { id: 'delivery', name: 'Delivery', orientation: 'core', supports: ['clients'] }, { adapter: a });
+    await runTool('write_node', { id: 'delivery', name: 'Delivery', archetype: 'core', keeps: ['clients'] }, { adapter: a });
     const model = await loadModel(a);
-    expect(model.nodes[0]).toMatchObject({ id: 'delivery', orientation: 'core', supports: ['clients'] });
+    expect(model.nodes[0]).toMatchObject({ id: 'delivery', archetype: 'core', keeps: ['clients'] });
   });
 
   it('append_log prepends most-recent-on-top', async () => {
@@ -43,6 +43,6 @@ describe('tools', () => {
 
   it('refuses to write through a read-only adapter', async () => {
     const ro = new MemoryAdapter(undefined, { writable: false });
-    await expect(runTool('write_contract', { id: 'x', with: 'X', gives: 'a', gets: 'b' }, { adapter: ro })).rejects.toThrow(/read-only/);
+    await expect(runTool('write_contract', { id: 'x', parties: 'X', 'org-gives': 'a', 'org-gets': 'b' }, { adapter: ro })).rejects.toThrow(/read-only/);
   });
 });

@@ -20,18 +20,18 @@ export interface ImprovementTask {
 
 const INSTRUCTIONS: Record<string, (t: string) => string> = {
   'gate.uncovered-contract': t =>
-    `Contract "${t}" has no core node delivering it. Find which part of the org keeps this promise (the org chart, or ask) and write a core node that supports it.`,
+    `Contract "${t}" has no core node delivering it. Find which part of the org keeps this promise (the org chart, or ask) and write a core node that keeps it.`,
   'gate.orphan-node': t =>
     `Node "${t}" keeps no contract. Connect it to the contract it serves, or reclassify it (platform nodes are allowed to keep none).`,
   'contract.no-get': t =>
     `Contract "${t}" has no get-leg. Determine what the org gets back from this party (the budget/financials, or ask) and fill it.`,
   'contract.no-give': t => `Contract "${t}" has no give-leg. State what the org gives this party.`,
-  'contract.no-measures': t =>
-    `Contract "${t}" has no measures. Find how value on each leg is actually measured (reports, or ask). Observed, not targets.`,
-  'contract.no-constraints': t => `Contract "${t}" records no conditions. Identify what must hold for it not to break.`,
+  'contract.no-signals': t =>
+    `Contract "${t}" has no signals. Find how each leg is actually read (reports, or ask). Observed, not targets.`,
+  'contract.no-terms': t => `Contract "${t}" records no terms. Identify what must hold for it not to break.`,
   'contract.uncited': t => `Contract "${t}" cites no source. Attach the document(s) it comes from.`,
-  'node.no-composition': t => `Node "${t}" has no composition. Describe what it is made of, key people included.`,
-  'node.no-needs': t => `Node "${t}" has no needs-today. State what it needs right now to stand.`,
+  'node.no-madeof': t => `Node "${t}" has no made-of. Describe what it is made of, key people included.`,
+  'node.no-needs': t => `Node "${t}" has no needs. State what it needs right now to stand.`,
   'node.uncited': t => `Node "${t}" cites no source.`,
 };
 

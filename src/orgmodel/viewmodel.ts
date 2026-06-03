@@ -20,18 +20,18 @@ export function contractState(c: Contract): FillState {
   return score([
     c.give.trim() !== '',
     c.get.trim() !== '',
-    c.constraints.length > 0,
-    c.measures.give.length + c.measures.get.length > 0,
+    c.terms.length > 0,
+    c.signals.outbound.length + c.signals.inbound.length > 0,
     c.sources.length > 0,
   ]);
 }
 
 export function nodeState(n: Node): FillState {
   return score([
-    n.composition.trim() !== '',
-    n.needsToday.trim() !== '',
+    n.madeOf.trim() !== '',
+    n.needs.trim() !== '',
     n.sources.length > 0,
-    n.orientation === 'platform' ? true : n.supports.length > 0,
+    n.archetype === 'platform' ? true : n.keeps.length > 0,
   ]);
 }
 
@@ -42,13 +42,13 @@ export interface SidebarItem {
   id: string;
   label: string;
   state: FillState;
-  orientation?: Node['orientation'];
+  archetype?: Node['archetype'];
 }
 
 export interface SidebarModel {
   contracts: SidebarItem[];
   core: SidebarItem[];
-  service: SidebarItem[];
+  supporting: SidebarItem[];
   platform: SidebarItem[];
 }
 
@@ -56,16 +56,16 @@ export function buildSidebar(model: OrgModel): SidebarModel {
   const contracts: SidebarItem[] = model.contracts.map(c => ({
     kind: 'contract',
     id: c.id,
-    label: c.withParty || c.id,
+    label: c.parties || c.id,
     state: contractState(c),
   }));
 
-  const byOri = (o: Node['orientation']): SidebarItem[] =>
+  const byArch = (a: Node['archetype']): SidebarItem[] =>
     model.nodes
-      .filter(n => n.orientation === o)
-      .map(n => ({ kind: 'node', id: n.id, label: n.name || n.id, state: nodeState(n), orientation: o }));
+      .filter(n => n.archetype === a)
+      .map(n => ({ kind: 'node', id: n.id, label: n.name || n.id, state: nodeState(n), archetype: a }));
 
-  return { contracts, core: byOri('core'), service: byOri('service'), platform: byOri('platform') };
+  return { contracts, core: byArch('core'), supporting: byArch('supporting'), platform: byArch('platform') };
 }
 
 /** Count of items not yet complete — drives the "needs work" hint. */

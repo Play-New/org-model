@@ -11,21 +11,21 @@ describe('viewmodel', () => {
   });
 
   it('marks a blank contract empty and a half-filled one partial', () => {
-    expect(contractState({ id: 'x', withParty: '', give: '', get: '', constraints: [], measures: { give: [], get: [] }, sources: [] })).toBe('empty');
-    expect(contractState({ id: 'x', withParty: 'X', give: 'a', get: 'b', constraints: [], measures: { give: [], get: [] }, sources: [] })).toBe('partial');
+    expect(contractState({ id: 'x', parties: '', give: '', get: '', terms: [], signals: { outbound: [], inbound: [] }, sources: [] })).toBe('empty');
+    expect(contractState({ id: 'x', parties: 'X', give: 'a', get: 'b', terms: [], signals: { outbound: [], inbound: [] }, sources: [] })).toBe('partial');
   });
 
-  it('treats a platform node without supports as not-incomplete on that axis', () => {
-    const base = { id: 'p', name: 'P', supports: [], dependsOn: [], composition: 'c', needsToday: 'n', sources: [{ sourceId: 's' }] };
-    expect(nodeState({ ...base, orientation: 'platform' })).toBe('done');
-    expect(nodeState({ ...base, orientation: 'core' })).toBe('partial'); // core needs a contract
+  it('treats a platform node without keeps as not-incomplete on that axis', () => {
+    const base = { id: 'p', name: 'P', keeps: [], reliesOn: [], madeOf: 'c', needs: 'n', sources: [{ sourceId: 's' }] };
+    expect(nodeState({ ...base, archetype: 'platform' })).toBe('done');
+    expect(nodeState({ ...base, archetype: 'core' })).toBe('partial'); // core needs a contract
   });
 
-  it('groups the sidebar into contracts and nodes by orientation', () => {
+  it('groups the sidebar into contracts and nodes by archetype', () => {
     const s = buildSidebar(cleanModel());
     expect(s.contracts).toHaveLength(2);
     expect(s.core.map(i => i.id)).toEqual(['delivery', 'bizdev']);
-    expect(s.service.map(i => i.id)).toEqual(['ops']);
+    expect(s.supporting.map(i => i.id)).toEqual(['ops']);
     expect(s.platform.map(i => i.id)).toEqual(['admin']);
     const empty = buildSidebar(emptyModel());
     expect(empty.contracts).toHaveLength(0);

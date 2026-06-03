@@ -7,7 +7,7 @@
  */
 
 import { lint } from '../orgmodel/lint';
-import type { Citation, Contract, Measure, Node } from '../orgmodel/model';
+import type { Citation, Contract, Node, Signal } from '../orgmodel/model';
 import { listSourceIds, loadModel, saveContract, saveNode, SOURCES_DIR } from '../orgmodel/store';
 import type { StorageAdapter } from '../storage/adapter';
 import type { ToolDef } from './types';
@@ -33,27 +33,27 @@ function cites(v: unknown): Citation[] {
     .filter(c => c.sourceId);
 }
 
-function measures(v: unknown): Measure[] {
+function signals(v: unknown): Signal[] {
   if (!Array.isArray(v)) return [];
-  return v.map((raw): Measure => {
+  return v.map((raw): Signal => {
     const o = (raw ?? {}) as Record<string, unknown>;
-    const m: Measure = { what: str(o.what) };
-    if (typeof o.value === 'string') m.value = o.value;
-    return m;
+    const s: Signal = { what: str(o.what) };
+    if (typeof o.value === 'string') s.value = o.value;
+    return s;
   });
 }
 
 function toContract(i: Record<string, unknown>): Contract {
-  const m = (i.measures ?? {}) as Record<string, unknown>;
+  const s = (i.signals ?? i.measures ?? {}) as Record<string, unknown>;
   const c: Contract = {
     id: str(i.id),
-    withParty: str(i.with ?? i.withParty),
+    parties: str(i.parties ?? i.with ?? i.withParty),
     give: str(i['org-gives'] ?? i.gives ?? i.give),
     get: str(i['org-gets'] ?? i.gets ?? i.get),
-    constraints: strArr(i.constraints),
-    measures: {
-      give: measures(m['org-gives'] ?? m.gives ?? m.give),
-      get: measures(m['org-gets'] ?? m.gets ?? m.get),
+    terms: strArr(i.terms ?? i.constraints),
+    signals: {
+      outbound: signals(s.outbound ?? s['org-gives'] ?? s.gives ?? s.give),
+      inbound: signals(s.inbound ?? s['org-gets'] ?? s.gets ?? s.get),
     },
     sources: cites(i.sources),
   };
@@ -63,15 +63,16 @@ function toContract(i: Record<string, unknown>): Contract {
 }
 
 function toNode(i: Record<string, unknown>): Node {
-  const o = str(i.orientation);
+  const raw = str(i.archetype ?? i.orientation);
+  const a = raw === 'service' ? 'supporting' : raw;
   const n: Node = {
     id: str(i.id),
     name: str(i.name),
-    orientation: (['core', 'service', 'platform'].includes(o) ? o : 'service') as Node['orientation'],
-    supports: strArr(i.supports),
-    dependsOn: strArr(i.dependsOn),
-    composition: str(i.composition),
-    needsToday: str(i.needsToday ?? i.needsNow),
+    archetype: (['core', 'supporting', 'platform'].includes(a) ? a : 'supporting') as Node['archetype'],
+    keeps: strArr(i.keeps ?? i.supports),
+    reliesOn: strArr(i['relies-on'] ?? i.dependsOn),
+    madeOf: str(i['made-of'] ?? i.composition),
+    needs: str(i.needs ?? i.needsToday ?? i.needsNow),
     sources: cites(i.sources),
   };
   if (str(i.note)) n.note = str(i.note);
@@ -135,7 +136,7 @@ export async function runTool(
 /* ----------------------------- schemas --------------------------------- */
 
 const citationsSchema = { type: 'array', items: { type: 'string' }, description: 'source ids' };
-const measureSchema = {
+const signalSchema = {
   type: 'array',
   items: {
     type: 'object',
@@ -157,15 +158,15 @@ export const TOOL_DEFS: ToolDef[] = [
       type: 'object',
       properties: {
         id: { type: 'string' },
-        with: { type: 'string', description: 'the outside party (short — just the party name)' },
+        parties: { type: 'string', description: 'the outside party (short — just the party name; the org is implicit)' },
         'org-gives': { type: 'string', description: 'what the organization gives this party' },
         'org-gets': { type: 'string', description: 'what comes back to the organization from this party' },
-        constraints: { type: 'array', items: { type: 'string' }, description: 'the rules/terms that must hold, or the contract breaks' },
-        measures: { type: 'object', properties: { 'org-gives': measureSchema, 'org-gets': measureSchema } },
+        terms: { type: 'array', items: { type: 'string' }, description: 'what must hold, or the contract breaks' },
+        signals: { type: 'object', properties: { outbound: signalSchema, inbound: signalSchema }, description: 'observed readings (never targets): outbound on what the org gives, inbound on what it gets' },
         note: { type: 'string', description: 'human-readable prose body (markdown), like a short legal-document narrative — see the prompt for the required sections. Write it in the model language, with inline (source-id) citations.' },
         sources: citationsSchema,
       },
-      required: ['id', 'with', 'org-gives', 'org-gets', 'note'],
+      required: ['id', 'parties', 'org-gives', 'org-gets', 'note'],
     },
   },
   {
@@ -176,15 +177,15 @@ export const TOOL_DEFS: ToolDef[] = [
       properties: {
         id: { type: 'string' },
         name: { type: 'string' },
-        orientation: { type: 'string', enum: ['core', 'service', 'platform'] },
-        supports: { type: 'array', items: { type: 'string' }, description: 'contract ids it keeps' },
-        dependsOn: { type: 'array', items: { type: 'string' }, description: 'node ids it relies on' },
-        composition: { type: 'string' },
-        needsToday: { type: 'string' },
+        archetype: { type: 'string', enum: ['core', 'supporting', 'platform'] },
+        keeps: { type: 'array', items: { type: 'string' }, description: 'contract ids it keeps' },
+        'relies-on': { type: 'array', items: { type: 'string' }, description: 'node ids it relies on' },
+        'made-of': { type: 'string', description: 'what it is made of, key people included' },
+        needs: { type: 'string', description: 'what it takes to stand right now' },
         note: { type: 'string', description: 'human-readable prose body (markdown): a short lead + one or two ## sub-headings, with inline (source-id) citations. This is what a person reads — write it in the model language.' },
         sources: citationsSchema,
       },
-      required: ['id', 'name', 'orientation', 'note'],
+      required: ['id', 'name', 'archetype', 'note'],
     },
   },
   {

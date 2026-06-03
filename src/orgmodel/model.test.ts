@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { cleanModel } from './fixtures';
-import { byOrientation, coreVsPlatform, emptyModel, uncoveredContracts } from './model';
+import { byArchetype, coreVsPlatform, emptyModel, uncoveredContracts } from './model';
 
 describe('model readings', () => {
   it('empty model is empty', () => {
@@ -11,14 +11,14 @@ describe('model readings', () => {
     expect(uncoveredContracts(cleanModel())).toEqual([]);
   });
 
-  it('groups nodes by orientation', () => {
-    const g = byOrientation(cleanModel());
+  it('groups nodes by archetype', () => {
+    const g = byArchetype(cleanModel());
     expect(g.core.map(n => n.id)).toEqual(['delivery', 'bizdev']);
-    expect(g.service.map(n => n.id)).toEqual(['ops']);
+    expect(g.supporting.map(n => n.id)).toEqual(['ops']);
     expect(g.platform.map(n => n.id)).toEqual(['admin']);
   });
 
-  it('counts the core/service/platform balance', () => {
-    expect(coreVsPlatform(cleanModel())).toEqual({ core: 2, service: 1, platform: 1 });
+  it('counts the core/supporting/platform balance', () => {
+    expect(coreVsPlatform(cleanModel())).toEqual({ core: 2, supporting: 1, platform: 1 });
   });
 });

@@ -130,10 +130,10 @@
   --ds-lilac: var(--ds-violet);
   --ds-slate: var(--ds-peri);
 
-  /* NODE ORIENTATION (Cicero) — the constellation hues */
-  --ori-core:     var(--ds-rose);
-  --ori-service:  var(--ds-peri);
-  --ori-platform: var(--ds-violet);
+  /* NODE ARCHETYPE (Cicero) — the constellation hues */
+  --ori-core:       var(--ds-rose);
+  --ori-supporting: var(--ds-peri);
+  --ori-platform:   var(--ds-violet);
 
   /* FILL STATE — the file-tree dots */
   --state-empty:   var(--fg-faint);

@@ -44,7 +44,7 @@ describe('improveUntilClean', () => {
   it('stops without looping forever when the agent makes no progress', async () => {
     const a = new MemoryAdapter();
     await saveContract(a, {
-      id: 'x', withParty: 'X', give: 'a', get: '', constraints: [], measures: { give: [], get: [] }, sources: [],
+      id: 'x', parties: 'X', give: 'a', get: '', terms: [], signals: { outbound: [], inbound: [] }, sources: [],
     });
     const noop: ProviderTurn = { stopReason: 'end_turn', content: [{ type: 'text', text: 'cannot' }] };
     const res = await improveUntilClean({ provider: new MockProvider([noop]), system: 's', adapter: a, maxRounds: 5 });

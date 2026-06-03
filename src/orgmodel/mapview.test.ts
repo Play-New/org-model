@@ -12,15 +12,15 @@ describe('buildMap', () => {
 
   it('columns nodes by role, contracts furthest right', () => {
     const x = (id: string) => nodes.find(n => n.id === id)!.position.x;
-    expect(x('n:admin')).toBeLessThan(x('n:ops')); // platform left of service
-    expect(x('n:ops')).toBeLessThan(x('n:delivery')); // service left of core
+    expect(x('n:admin')).toBeLessThan(x('n:ops')); // platform left of supporting
+    expect(x('n:ops')).toBeLessThan(x('n:delivery')); // supporting left of core
     expect(x('n:delivery')).toBeLessThan(x('c:clients')); // core left of contracts
   });
 
-  it('draws supports and depends edges, none dangling', () => {
-    const supports = edges.filter(e => e.kind === 'supports');
+  it('draws keeps and depends edges, none dangling', () => {
+    const keeps = edges.filter(e => e.kind === 'keeps');
     const depends = edges.filter(e => e.kind === 'depends');
-    expect(supports).toHaveLength(4); // clients×3 (delivery,bizdev,ops) + partners×1 (bizdev)
+    expect(keeps).toHaveLength(4); // clients×3 (delivery,bizdev,ops) + partners×1 (bizdev)
     expect(depends).toHaveLength(1); // delivery → ops
     const ids = new Set(nodes.map(n => n.id));
     expect(edges.every(e => ids.has(e.source) && ids.has(e.target))).toBe(true);

@@ -1,4 +1,4 @@
-/** The left pane (Org/): contracts, then nodes split into core / service / platform,
+/** The left pane (Org/): contracts, then nodes split into core / supporting / platform,
  *  each item with a fill-state dot and each group with a "to do / ✓" hint. */
 
 import { useT } from '../i18n';
@@ -58,7 +58,7 @@ export function FilesPane({ model, selectedId, onSelect }: FilesPaneProps) {
       <Group label={t('files.contracts')} items={s.contracts} selectedId={selectedId} onSelect={onSelect} />
       <div className="org__section">{t('files.nodes')}</div>
       <Group label="Core" items={s.core} selectedId={selectedId} onSelect={onSelect} />
-      <Group label="Service" items={s.service} selectedId={selectedId} onSelect={onSelect} />
+      <Group label="Supporting" items={s.supporting} selectedId={selectedId} onSelect={onSelect} />
       <Group label="Platform" items={s.platform} selectedId={selectedId} onSelect={onSelect} />
     </nav>
   );

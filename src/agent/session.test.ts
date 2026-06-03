@@ -92,7 +92,7 @@ describe('guided session, end to end (mocked LLM)', () => {
 
     const map = buildMap(model);
     expect(map.nodes).toHaveLength(2);
-    expect(map.edges.filter(e => e.kind === 'supports')).toHaveLength(1);
+    expect(map.edges.filter(e => e.kind === 'keeps')).toHaveLength(1);
   });
 
   it('rejecting the diff card leaves nothing written', async () => {

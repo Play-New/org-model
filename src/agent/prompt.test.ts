@@ -15,7 +15,7 @@ describe('buildSystemPrompt', () => {
   it('states the lens and the five-step method', () => {
     const p = buildSystemPrompt({ config });
     expect(p).toContain('set of contracts it has with the world');
-    expect(p).toContain('core / service / platform');
+    expect(p).toContain('core / supporting / platform');
     expect(p).toContain('documents first');
   });
 

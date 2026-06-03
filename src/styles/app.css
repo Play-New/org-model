@@ -517,11 +517,11 @@ input, select, textarea { font: inherit; color: inherit; }
 .map__legend span { display: inline-flex; align-items: center; gap: 5px; }
 .map__sw { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
 .map__sw--core { background: var(--ori-core); }
-.map__sw--service { background: var(--ori-service); }
+.map__sw--supporting { background: var(--ori-supporting); }
 .map__sw--platform { background: var(--ori-platform); }
 .react-flow__node.mapnode { font-family: var(--font-body); font-size: var(--t-sm); border-radius: var(--r-md); }
 .react-flow__node.ori--core { border-left: 3px solid var(--ori-core); }
-.react-flow__node.ori--service { border-left: 3px solid var(--ori-service); }
+.react-flow__node.ori--supporting { border-left: 3px solid var(--ori-supporting); }
 .react-flow__node.ori--platform { border-left: 3px solid var(--ori-platform); }
 .react-flow__node.mapnode--contract { font-weight: var(--w-medium); }
 .react-flow__node.mapnode.is-selected { box-shadow: 0 0 0 2px var(--brand-accent); }

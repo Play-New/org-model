@@ -86,10 +86,10 @@ the files alone; `connect.ts` remembers the source and reconnects silently.
 
 - `pnpm install`
 - `pnpm dev` — open in a Chromium browser (Edge / Chrome; needs File System Access)
-- `pnpm test` — unit + engine-level e2e (mocked LLM); **97 tests**
+- `pnpm test` — unit + engine-level e2e (mocked LLM); **101 tests**
 - `pnpm lint` · `pnpm build` (static bundle + PWA)
 
-## State (code green as of 2026-06-02: tsc · lint · 97 tests · build + PWA)
+## State (code green as of 2026-06-03: tsc · lint · 101 tests · build + PWA)
 
 Done and working:
 - Welcome screen → wizard → connect (folder **or** GitHub) → 3-pane shell (Org / Chat
@@ -111,14 +111,14 @@ Done and working:
 - **GitHub read+write**: `GitHubAdapter`, token encrypted, wizard connect UI. Engine
   e2e over a mocked GitHub (`agent/github-session.test.ts`).
 
+The model matches `canon/STRUCTURE.md`: contracts (`parties` · org-gives · org-gets ·
+`terms` · `signals` outbound/inbound → `health` healthy/strained/broken/unknown),
+nodes (`archetype` core/supporting/platform · `keeps` · `relies-on` · `made-of` ·
+`needs`). Parsers still read the old keys, so older org files keep loading. Kept
+light: `parties` is a single counterpart and a `signal` is one observed value with
+the trajectory in prose — full multi-party + time-series are later.
+
 Pending follow-up (needs you):
-- **Code sweep — align code to `canon/STRUCTURE.md`.** The spec was reworked; the code
-  is not yet. Renames: `with→parties`, `constraints→terms`, `measures→signals`
-  (+`unknown` health), `orientation→archetype`, `service→supporting`,
-  `supports→keeps`, `dependsOn→relies on`, `composition→made of`, `needsToday→needs`;
-  contract prose 5→4 sections, node a 5-part profile. Decided light: `parties` stays a
-  single counterpart, `signals` stay a single observed value with the trajectory in
-  prose (full multi-party + time-series are later). Parsers read old keys too.
 - **Analysis capability** (`canon/ANALYSIS.md`) — designed, not built; open product
   questions (granularity, output form, cadence) await alignment.
 - **Batched commits** — today each write is its own commit; a per-turn commit (Git

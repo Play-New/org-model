@@ -28,7 +28,7 @@ export function MapPane({ model, selectedId, onPick }: MapPaneProps) {
     className: [
       'mapnode',
       `mapnode--${n.data.kind}`,
-      n.data.orientation ? `ori--${n.data.orientation}` : '',
+      n.data.archetype ? `ori--${n.data.archetype}` : '',
       `st--${n.data.state}`,
       parseFlowId(n.id).id === selectedId ? 'is-selected' : '',
     ]
@@ -41,7 +41,7 @@ export function MapPane({ model, selectedId, onPick }: MapPaneProps) {
     source: e.source,
     target: e.target,
     className: `mapedge mapedge--${e.kind}`,
-    animated: e.kind === 'supports',
+    animated: e.kind === 'keeps',
   }));
 
   return (
@@ -61,7 +61,7 @@ export function MapPane({ model, selectedId, onPick }: MapPaneProps) {
       </ReactFlow>
       <div className="map__legend">
         <span><i className="map__sw map__sw--core" /> core</span>
-        <span><i className="map__sw map__sw--service" /> service</span>
+        <span><i className="map__sw map__sw--supporting" /> supporting</span>
         <span><i className="map__sw map__sw--platform" /> platform</span>
       </div>
     </div>

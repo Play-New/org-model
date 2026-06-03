@@ -2,15 +2,14 @@
  * The org-model: two boxes derived from one lens.
  *
  *   "An org is the set of contracts it holds with the world — what it gives and
- *    gets from each outside party — and the machine of resources it orchestrates
- *    to keep them."
+ *    gets from each outside party — and the internal nodes that keep them."
  *
  * The definition IS the schema. See canon/STRUCTURE.md for the full spec.
  * This is the in-memory shape; on disk each item is a markdown file with YAML
  * frontmatter under the chosen org folder.
  *
- *   Contracts : the exchanges with the world (gives/gets, conditions, measures)
- *   Nodes     : what the contracts rest on (core/service/platform)
+ *   Contracts : the exchanges with the world (org-gives/org-gets, terms, signals)
+ *   Nodes     : what the contracts rest on (core/supporting/platform)
  */
 
 /** A citation back to a source: a file under sources/, or a saved answer. */
@@ -20,14 +19,14 @@ export interface Citation {
 }
 
 /**
- * A measure of value on one leg of a contract. Observed, NOT a target —
- * a target is should-be, a measure is as-is. `value` is the observed reading
- * today; it is the attachment point where phase-two live data feeds in.
+ * A signal on one leg of a contract. Observed, NOT a target — a target is
+ * should-be, a signal is as-is. `value` is the observed reading today; it is the
+ * attachment point where phase-two live data feeds in.
  */
-export interface Measure {
-  what: string; // what is measured (e.g. "€ raccolti", "ricerche finanziate")
+export interface Signal {
+  what: string; // what is read (e.g. "€ raised", "research funded")
   value?: string; // the observed value today, once known
-  // No per-measure sources: the contract cites its sources once (Contract.sources),
+  // No per-signal sources: the contract cites its sources once (Contract.sources),
   // and each specific figure is cited inline in the prose note.
 }
 
@@ -35,18 +34,18 @@ export interface Measure {
 /* Contracts                                                               */
 /* ---------------------------------------------------------------------- */
 
-/** Health is derived from measures + constraints, never asserted on its own. */
-export type ContractHealth = 'healthy' | 'strained' | 'broken';
+/** Health is read off signals + terms, never asserted on its own. */
+export type ContractHealth = 'healthy' | 'strained' | 'broken' | 'unknown';
 
 /** A contract with one outside party. Mutual, usually implicit. */
 export interface Contract {
   id: string;
-  withParty: string; // the outside party
+  parties: string; // the outside party (the org is implicit)
   give: string; // what the org gives them (the promise / give-leg)
   get: string; // what comes back that sustains the org (the fuel / get-leg)
-  constraints: string[]; // vincoli — conditions under which the contract holds
-  measures: { give: Measure[]; get: Measure[] }; // how you know value flows, both legs
-  health?: ContractHealth; // derived by the agent from measures + constraints
+  terms: string[]; // what must hold, or the contract breaks
+  signals: { outbound: Signal[]; inbound: Signal[] }; // how you read each leg
+  health?: ContractHealth; // read by the agent off signals + terms
   note?: string; // the human-readable prose body (markdown, with inline (source) citations)
   sources: Citation[];
 }
@@ -56,17 +55,17 @@ export interface Contract {
 /* ---------------------------------------------------------------------- */
 
 /** What a node points at — its role in keeping the contracts (Cicero). */
-export type Orientation = 'core' | 'service' | 'platform';
+export type Archetype = 'core' | 'supporting' | 'platform';
 
-/** A node in the machine: a resource the contracts rest on. */
+/** A node: an internal part the contracts rest on. */
 export interface Node {
   id: string;
   name: string;
-  orientation: Orientation; // core (delivers a contract) / service / platform
-  supports: string[]; // Contract ids this node helps keep
-  dependsOn: string[]; // other Node ids this node relies on (core→service→platform)
-  composition: string; // what it is made of (incl. key people if any)
-  needsToday: string; // conditions it needs right now to stand (beyond the nodes in dependsOn)
+  archetype: Archetype; // core (delivers a contract) / supporting / platform
+  keeps: string[]; // Contract ids this node helps keep
+  reliesOn: string[]; // other Node ids this node relies on (core→supporting→platform)
+  madeOf: string; // what it is made of (incl. key people if any)
+  needs: string; // conditions it needs right now to stand (beyond the nodes in reliesOn)
   note?: string; // the human-readable prose body (markdown, with inline (source) citations)
   sources: Citation[];
 }
@@ -93,24 +92,24 @@ export function emptyModel(): OrgModel {
 /** Contracts with no core node keeping them — a completeness violation. */
 export function uncoveredContracts(m: OrgModel): Contract[] {
   return m.contracts.filter(
-    c => !m.nodes.some(n => n.orientation === 'core' && n.supports.includes(c.id)),
+    c => !m.nodes.some(n => n.archetype === 'core' && n.keeps.includes(c.id)),
   );
 }
 
-/** Nodes that support no contract — candidates for "pure overhead", flagged. */
+/** Nodes that keep no contract — candidates for "pure overhead", flagged. */
 export function orphanNodes(m: OrgModel): Node[] {
-  return m.nodes.filter(n => n.supports.length === 0);
+  return m.nodes.filter(n => n.keeps.length === 0);
 }
 
-/** Nodes grouped by orientation — the core/service/platform picture. */
-export function byOrientation(m: OrgModel): Record<Orientation, Node[]> {
-  const out: Record<Orientation, Node[]> = { core: [], service: [], platform: [] };
-  for (const n of m.nodes) out[n.orientation].push(n);
+/** Nodes grouped by archetype — the core/supporting/platform picture. */
+export function byArchetype(m: OrgModel): Record<Archetype, Node[]> {
+  const out: Record<Archetype, Node[]> = { core: [], supporting: [], platform: [] };
+  for (const n of m.nodes) out[n.archetype].push(n);
   return out;
 }
 
 /** Core vs platform — how much exists just to keep the org running. */
-export function coreVsPlatform(m: OrgModel): { core: number; service: number; platform: number } {
-  const g = byOrientation(m);
-  return { core: g.core.length, service: g.service.length, platform: g.platform.length };
+export function coreVsPlatform(m: OrgModel): { core: number; supporting: number; platform: number } {
+  const g = byArchetype(m);
+  return { core: g.core.length, supporting: g.supporting.length, platform: g.platform.length };
 }

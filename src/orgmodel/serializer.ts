@@ -6,17 +6,19 @@
  * never parsed back. Round-trip identity holds on the frontmatter:
  * parse(serialize(x)) deep-equals x.
  *
- * Uses js-yaml (robust nesting for measures) rather than the slim slice-1 parser.
+ * Uses js-yaml (robust nesting for signals) rather than the slim slice-1 parser.
+ * Old field names (with, constraints, measures, orientation, supports, dependsOn,
+ * composition, needsToday) are still parsed, so older files keep loading.
  */
 
 import yaml from 'js-yaml';
 import type {
+  Archetype,
   Citation,
   Contract,
   ContractHealth,
-  Measure,
   Node,
-  Orientation,
+  Signal,
 } from './model';
 
 /* ----------------------------- citations ------------------------------ */
@@ -41,28 +43,28 @@ function strToCitations(v: unknown): Citation[] {
   return v.filter((x): x is string => typeof x === 'string').map(strToCitation);
 }
 
-/* ------------------------------ measures ------------------------------- */
+/* ------------------------------- signals ------------------------------- */
 
-interface MeasureOnDisk {
+interface SignalOnDisk {
   what: string;
   value?: string;
 }
 
-function measureToDisk(m: Measure): MeasureOnDisk {
-  const out: MeasureOnDisk = { what: m.what };
-  if (m.value !== undefined) out.value = m.value;
+function signalToDisk(s: Signal): SignalOnDisk {
+  const out: SignalOnDisk = { what: s.what };
+  if (s.value !== undefined) out.value = s.value;
   return out;
 }
 
-function diskToMeasure(v: unknown): Measure {
+function diskToSignal(v: unknown): Signal {
   const o = (v ?? {}) as Record<string, unknown>;
-  const m: Measure = { what: typeof o.what === 'string' ? o.what : '' };
-  if (typeof o.value === 'string') m.value = o.value;
-  return m;
+  const s: Signal = { what: typeof o.what === 'string' ? o.what : '' };
+  if (typeof o.value === 'string') s.value = o.value;
+  return s;
 }
 
-function diskToMeasures(v: unknown): Measure[] {
-  return Array.isArray(v) ? v.map(diskToMeasure) : [];
+function diskToSignals(v: unknown): Signal[] {
+  return Array.isArray(v) ? v.map(diskToSignal) : [];
 }
 
 /* --------------------------- frontmatter I/O --------------------------- */
@@ -96,34 +98,34 @@ export function contractToMarkdown(c: Contract): string {
   const data: Record<string, unknown> = {
     id: c.id,
     type: 'contract',
-    with: c.withParty,
+    parties: c.parties,
     'org-gives': c.give,
     'org-gets': c.get,
-    constraints: c.constraints,
-    measures: {
-      'org-gives': c.measures.give.map(measureToDisk),
-      'org-gets': c.measures.get.map(measureToDisk),
+    terms: c.terms,
+    signals: {
+      outbound: c.signals.outbound.map(signalToDisk),
+      inbound: c.signals.inbound.map(signalToDisk),
     },
     ...(c.health ? { health: c.health } : {}),
     sources: citationsToStr(c.sources),
   };
-  // The body is the agent's prose (Zeno-style: headings + inline (source) citations).
+  // The body is the agent's prose (legal-document-style: headings + inline (source) citations).
   return `${frontmatter(data)}\n${(c.note ?? '').trim()}\n`;
 }
 
 export function parseContract(md: string): Contract {
   const { data, body } = splitFrontmatter(md);
-  const measures = (data.measures ?? {}) as Record<string, unknown>;
+  const signals = (data.signals ?? data.measures ?? {}) as Record<string, unknown>;
   const note = body.trim();
   return {
     id: str(data.id),
-    withParty: str(data.with),
+    parties: str(data.parties ?? data.with),
     give: str(data['org-gives'] ?? data.gives),
     get: str(data['org-gets'] ?? data.gets),
-    constraints: strArray(data.constraints),
-    measures: {
-      give: diskToMeasures(measures['org-gives'] ?? measures.gives),
-      get: diskToMeasures(measures['org-gets'] ?? measures.gets),
+    terms: strArray(data.terms ?? data.constraints),
+    signals: {
+      outbound: diskToSignals(signals.outbound ?? signals['org-gives'] ?? signals.gives),
+      inbound: diskToSignals(signals.inbound ?? signals['org-gets'] ?? signals.gets),
     },
     ...(typeof data.health === 'string'
       ? { health: data.health as ContractHealth }
@@ -140,11 +142,11 @@ export function nodeToMarkdown(n: Node): string {
     id: n.id,
     type: 'node',
     name: n.name,
-    orientation: n.orientation,
-    supports: n.supports,
-    dependsOn: n.dependsOn,
-    composition: n.composition,
-    needsToday: n.needsToday,
+    archetype: n.archetype,
+    keeps: n.keeps,
+    'relies-on': n.reliesOn,
+    'made-of': n.madeOf,
+    needs: n.needs,
     sources: citationsToStr(n.sources),
   };
   return `${frontmatter(data)}\n${(n.note ?? '').trim()}\n`;
@@ -152,18 +154,19 @@ export function nodeToMarkdown(n: Node): string {
 
 export function parseNode(md: string): Node {
   const { data, body } = splitFrontmatter(md);
-  const orientation = str(data.orientation);
+  const raw = str(data.archetype ?? data.orientation);
+  const archetype = raw === 'service' ? 'supporting' : raw;
   const note = body.trim();
   return {
     id: str(data.id),
     name: str(data.name),
-    orientation: (['core', 'service', 'platform'].includes(orientation)
-      ? orientation
-      : 'service') as Orientation,
-    supports: strArray(data.supports),
-    dependsOn: strArray(data.dependsOn),
-    composition: str(data.composition),
-    needsToday: str(data.needsToday),
+    archetype: (['core', 'supporting', 'platform'].includes(archetype)
+      ? archetype
+      : 'supporting') as Archetype,
+    keeps: strArray(data.keeps ?? data.supports),
+    reliesOn: strArray(data['relies-on'] ?? data.dependsOn),
+    madeOf: str(data['made-of'] ?? data.composition),
+    needs: str(data.needs ?? data.needsToday),
     ...(note ? { note } : {}),
     sources: strToCitations(data.sources),
   };

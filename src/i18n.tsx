@@ -4,7 +4,7 @@
  * language you talk to the agent in); `modelLanguage` is separate (the language
  * the agent writes the model content in).
  *
- * Deliberately NOT translated (loanwords / brand): `Org/`, `core`, `service`,
+ * Deliberately NOT translated (loanwords / brand): `Org/`, `core`, `supporting`,
  * `platform`, `log`. They stay identical across languages.
  *
  * Keys are dotted and flat. A value of the form "a|b" renders `a` plain followed

@@ -16,17 +16,17 @@ describe('lint', () => {
   it('flags an empty give-leg, a dangling dependency, and an uncovered contract', () => {
     const m: OrgModel = {
       contracts: [
-        { id: 'x', withParty: 'X', give: '', get: 'cash', constraints: [], measures: { give: [], get: [] }, sources: [] },
+        { id: 'x', parties: 'X', give: '', get: 'cash', terms: [], signals: { outbound: [], inbound: [] }, sources: [] },
       ],
       nodes: [
-        { id: 'n', name: 'N', orientation: 'service', supports: ['x'], dependsOn: ['ghost'], composition: '', needsToday: '', sources: [] },
+        { id: 'n', name: 'N', archetype: 'supporting', keeps: ['x'], reliesOn: ['ghost'], madeOf: '', needs: '', sources: [] },
       ],
     };
     const f = lint(m, new Set());
     const codes = f.map(x => x.code);
     expect(codes).toContain('contract.no-give');
     expect(codes).toContain('node.bad-dependency');
-    expect(codes).toContain('gate.uncovered-contract'); // 'n' is service, not core
+    expect(codes).toContain('gate.uncovered-contract'); // 'n' is supporting, not core
     expect(isClean(f)).toBe(false);
     expect(errors(f).length).toBeGreaterThan(0);
   });
