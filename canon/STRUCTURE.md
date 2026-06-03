@@ -64,14 +64,18 @@ structure reads like a short legal document — parties, two obligations, terms.
 | **terms** | what must hold, or the contract breaks |
 | **sources** | the documents the contract is drawn from |
 
-A contract's **prose** (what a human reads) is a short legal-document narrative, in
-this order:
+A contract's **prose** (what a human reads) is written as a short **legal document**,
+not a flowing essay: a one-line **title** naming the exchange, then four `##` sections,
+in this order —
 
-1. **The parties** — the organization and the outside party, with specifics and
-   their roles.
-2. **What the org gives** — the promise.
+1. **The parties** — the organization and the outside party, named with specifics and their roles.
+2. **What the org gives** — the promise it makes that party.
 3. **What the org gets back** — the consideration that sustains the org.
 4. **The terms** — the conditions that hold it together, and what breaks it.
+
+Each section is a few tight sentences, with the specifics and figures cited inline.
+A lawyer should recognise the shape: a heading, the parties, the obligations, the
+terms — not three rolling paragraphs.
 
 Whether the contract is being *kept* is **not** part of its text — a legal document
 does not state how you know it is working. That is read from outside, through the

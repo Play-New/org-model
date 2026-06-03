@@ -58,8 +58,11 @@ export class AnthropicProvider implements LlmProvider {
    *  (a) system as a one-block array — caches tools + system together;
    *  (b) a rolling breakpoint on the last content block of the last message —
    *      caches the growing conversation prefix.
-   * Adaptive thinking is on; with Opus 4.8 the thinking text is empty by default
-   * but the block + signature still round-trip (see anthropic-map).
+   * Adaptive thinking is intentionally OFF: this manual tool-use loop re-serializes
+   * the assistant turn every round, and the API rejects ANY change to a thinking
+   * block ("blocks must remain as they were in the original response" — a 400).
+   * Re-enable only once we pass the raw thinking blocks back byte-for-byte. The
+   * block-preservation plumbing in anthropic-map stays, dormant, for that day.
    */
   private params(req: ProviderRequest): Record<string, unknown> {
     const apiMessages = toApiMessages(req.messages);
@@ -72,7 +75,6 @@ export class AnthropicProvider implements LlmProvider {
       model: modelId(this.opts.model),
       max_tokens: this.opts.maxTokens ?? 32000,
       system: [{ type: 'text', text: req.system, cache_control: { type: 'ephemeral' } }],
-      thinking: { type: 'adaptive' },
       // wire shapes are correct; cast isolates us from SDK param-type churn
       messages: apiMessages as never,
       tools: toApiTools(req.tools, this.opts.webSearch ?? true) as never,
