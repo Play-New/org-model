@@ -160,9 +160,9 @@
   --ring:      rgba(0, 0, 0, 0.13);
   --control-h: 40px;
 
-  /* LAYOUT — Org (narrow) · Chat (narrow) · Workspace (the rest, largest) */
-  --org-w:  248px;
-  --chat-w: clamp(380px, 34vw, 460px);
+  /* LAYOUT — Org (narrow) · Chat (roomy) · Workspace (the rest) */
+  --org-w:  224px;
+  --chat-w: clamp(440px, 36vw, 620px);
 }
 
 @media (prefers-reduced-motion: reduce) {
