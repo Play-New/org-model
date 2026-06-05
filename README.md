@@ -3,8 +3,9 @@
 **This is your organization** — the promises it keeps to the world, and the parts
 inside that keep them. A local-first, browser-only app that maps any organization
 into a model of **contracts** (what it gives and gets from each outside party) and
-**nodes** (core / service / platform, with dependencies), guided by an agent,
-documents first. No backend.
+**nodes** (core / supporting / platform, with dependencies) — and the **signals**
+that read whether each contract is holding. Guided by an agent, documents first. No
+backend.
 
 **Live:** https://org.playnew.com · open in Chrome or Edge.
 
@@ -40,7 +41,7 @@ You only need this to modify the code:
 
 ## Verify
 
-- `pnpm test` — unit + engine-level end-to-end with a mocked LLM (97 tests)
+- `pnpm test` — unit + engine-level end-to-end with a mocked LLM (108 tests)
 - `pnpm lint`
 - `pnpm build` — static bundle + PWA (manifest + service worker), code-split
 

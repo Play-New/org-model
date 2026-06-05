@@ -89,7 +89,7 @@ the files alone; `connect.ts` remembers the source and reconnects silently.
 - `pnpm test` — unit + engine-level e2e (mocked LLM); **108 tests**
 - `pnpm lint` · `pnpm build` (static bundle + PWA)
 
-## State (code green as of 2026-06-03: tsc · lint · 108 tests · build + PWA)
+## State (code green as of 2026-06-05: tsc · lint · 108 tests · build + PWA)
 
 Done and working:
 - Welcome screen → wizard → connect (folder **or** GitHub) → 3-pane shell (Org / Chat
@@ -102,15 +102,20 @@ Done and working:
   the browser (mammoth / SheetJS / JSZip, lazy-loaded — `ui/extractOffice.ts`). Chat
   persistence (chats are sources), date→topic titles, delete chat (keeps `log.md`),
   jump-to-bottom, auto-grow composer. The agent works **one stage at a time**
-  (contracts complete before nodes) and writes cited Zeno-style prose.
+  (contracts complete before nodes) and writes each contract note as a titled
+  **legal document** (a title line + four `##` sections: parties · gives · gets ·
+  terms), cited inline.
 - Map: react-flow, constellation palette (rose / peri / violet), kind columns, colour
   legend, click-to-select.
 - **Agent harness** (`agent/`): tool-use loop with a **fail-closed** confirm gate (a
   write runs only if a confirm approves it); tools `read_model` / `write_contract` /
   `write_node` / `save_source` / `append_log` + server-side **web_search + web_fetch**
   (`web_*_20260209`); **prompt caching** (one breakpoint on system+tools, one rolling
-  on the conversation) and **adaptive thinking** (thinking blocks + signatures
-  round-trip through the loop) in `agent/anthropic.ts`; `maxRetries: 4` backoff.
+  on the conversation) in `agent/anthropic.ts`; `maxRetries: 4` backoff. **Adaptive
+  thinking is OFF** — this manual loop re-serializes the assistant turn each round and
+  the API rejects any change to a thinking block (400); the block-preservation
+  plumbing in `agent/anthropic-map.ts` stays dormant until we pass raw blocks back
+  verbatim (see Pending).
 - Two model-wide actions in the Org/ pane header: **Improve** (`agent/autoresearch.ts`
   — lint→fix rounds, each write behind the diff card) and **Review**
   (`agent/review.ts` — **semantic lint**: the LLM flags incoherence the deterministic
@@ -131,11 +136,16 @@ the trajectory in prose — full multi-party + time-series are later.
 Pending follow-up (needs you):
 - **Analysis capability** (`canon/ANALYSIS.md`) — designed, not built; open product
   questions (granularity, output form, cadence) await alignment.
+- **Re-enable adaptive thinking, properly** — currently OFF (see the harness note).
+  To turn it back on, store the **raw** thinking blocks the API returns and send them
+  back byte-for-byte (don't re-serialize through our typed blocks), or the API 400s.
 - **Batched commits** — today each write is its own commit; a per-turn commit (Git
   Data API: blobs → tree → commit) would be tidier. Not needed to ship.
-- **Live browser pass** — a real Anthropic key (and, for GitHub, a fine-grained PAT
-  with Contents: Read and write). The native folder/file pickers are OS dialogs, not
-  automatable; the engine is covered deterministically instead.
+- **Live use** — a first real-key browser pass (early June) surfaced and fixed: a
+  thinking 400, contracts written as flowing prose (now a titled legal document), and
+  cramped columns (chat + file given more room). Ongoing real-key use is the remaining
+  check; the native folder/file pickers are OS dialogs (not automatable), so the
+  engine stays covered deterministically.
 
 ## Docs map
 
