@@ -221,13 +221,26 @@ input, select, textarea { font: inherit; color: inherit; }
 .brand__name { font-family: var(--font-display); font-weight: var(--w-medium); font-size: var(--t-lg); letter-spacing: var(--ls-h2); }
 
 .panes {
-  display: grid; min-height: 0;
+  display: grid; min-height: 0; position: relative;
   grid-template-columns: var(--org-w) var(--chat-w) minmax(0, 1fr);
 }
 .pane { min-height: 0; display: grid; grid-template-rows: auto 1fr; overflow: hidden; }
 .pane--org { background: var(--bg-alt); border-right: 1px solid var(--panel-border); }
 .pane--chat { background: var(--bg); grid-template-rows: 1fr; }
 .pane--workspace { background: var(--bg); border-left: 1px solid var(--panel-border); grid-template-rows: 1fr; }
+
+/* Drag-to-resize handles, sitting on the two column boundaries (see usePaneSizing). */
+.pane-handle {
+  position: absolute; top: 0; bottom: 0; width: 11px; transform: translateX(-50%);
+  cursor: col-resize; z-index: 5; touch-action: none;
+}
+.pane-handle::after {
+  content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px;
+  background: transparent; transform: translateX(-50%); transition: background var(--dur-base) var(--ease-out);
+}
+.pane-handle:hover::after, .pane-handle:active::after { background: var(--fg-light); width: 2px; }
+.pane-handle--1 { left: var(--org-w); }
+.pane-handle--2 { left: calc(var(--org-w) + var(--chat-w)); }
 
 .pane__head {
   display: flex; align-items: center; gap: var(--sp-2);
@@ -537,6 +550,7 @@ input, select, textarea { font: inherit; color: inherit; }
 @media (max-width: 1100px) {
   .panes { grid-template-columns: var(--chat-w) minmax(0, 1fr); }
   .pane--org { display: none; }
+  .pane-handle { display: none; } /* manual resize is a wide-desktop affordance only */
 }
 @media (max-width: 760px) {
   /* single pane at a time, chosen by the bottom nav */

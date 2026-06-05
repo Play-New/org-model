@@ -4,10 +4,11 @@
  * the map by default, or the clicked file).
  */
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useT } from '../i18n';
 import { useChat } from '../app/useChat';
 import { useModel } from '../app/useModel';
+import { usePaneSizing } from '../app/usePaneSizing';
 import type { AppConfig } from '../config/config';
 import type { ItemKind } from '../orgmodel/viewmodel';
 import type { StorageAdapter } from '../storage/adapter';
@@ -30,6 +31,9 @@ export function Shell({ config, adapter, onOpenSettings }: ShellProps) {
   const [view, setView] = useState<WorkspaceView>('map');
   const [mtab, setMtab] = useState<'org' | 'chat' | 'workspace'>('chat'); // which pane shows on a phone
   const readOnly = !adapter.writable;
+  const orgRef = useRef<HTMLElement | null>(null);
+  const chatRef = useRef<HTMLElement | null>(null);
+  const { vars, startResize } = usePaneSizing(orgRef, chatRef);
 
   const onSelect = (kind: ItemKind, id: string) => {
     setSel({ kind, id });
@@ -57,8 +61,8 @@ export function Shell({ config, adapter, onOpenSettings }: ShellProps) {
         </button>
       </header>
 
-      <div className="panes" data-mtab={mtab}>
-        <aside className="pane pane--org">
+      <div className="panes" data-mtab={mtab} style={vars}>
+        <aside className="pane pane--org" ref={orgRef}>
           <div className="pane__head">
             <span>Org/</span>
             {!readOnly && (
@@ -81,13 +85,28 @@ export function Shell({ config, adapter, onOpenSettings }: ShellProps) {
           </div>
         </aside>
 
-        <main className="pane pane--chat">
+        <main className="pane pane--chat" ref={chatRef}>
           <ChatPane chat={chat} />
         </main>
 
         <section className="pane pane--workspace">
           <Workspace model={model} selected={sel} view={view} onView={setView} onPick={onPick} />
         </section>
+
+        <div
+          className="pane-handle pane-handle--1"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label={t('shell.resizeOrg')}
+          onPointerDown={e => startResize('org', e)}
+        />
+        <div
+          className="pane-handle pane-handle--2"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label={t('shell.resizeChat')}
+          onPointerDown={e => startResize('chat', e)}
+        />
       </div>
 
       <nav className="mobilenav" aria-label={t('nav.sections')}>

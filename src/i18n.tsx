@@ -247,6 +247,8 @@ export const STRINGS: Record<string, Entry> = {
   'shell.settings': S('Settings', 'Impostazioni', 'Ajustes', 'Réglages', 'Einstellungen', 'Definições'),
   'shell.readonly': S('read-only', 'sola lettura', 'solo lectura', 'lecture seule', 'schreibgeschützt', 'só leitura'),
   'shell.loading': S('loading…', 'caricamento…', 'cargando…', 'chargement…', 'lädt…', 'a carregar…'),
+  'shell.resizeOrg': S('Resize the Org column', 'Ridimensiona la colonna Org', 'Redimensionar la columna Org', 'Redimensionner la colonne Org', 'Org-Spalte anpassen', 'Redimensionar a coluna Org'),
+  'shell.resizeChat': S('Resize the chat column', 'Ridimensiona la colonna chat', 'Redimensionar la columna del chat', 'Redimensionner la colonne du chat', 'Chat-Spalte anpassen', 'Redimensionar a coluna do chat'),
   'nav.org': S('Org', 'Org', 'Org', 'Org', 'Org', 'Org'),
   'nav.chat': S('Chat', 'Chat', 'Chat', 'Chat', 'Chat', 'Chat'),
   'nav.map': S('Map', 'Mappa', 'Mapa', 'Carte', 'Karte', 'Mapa'),
