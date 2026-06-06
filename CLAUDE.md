@@ -89,7 +89,7 @@ the files alone; `connect.ts` remembers the source and reconnects silently.
 - `pnpm test` — unit + engine-level e2e (mocked LLM); **108 tests**
 - `pnpm lint` · `pnpm build` (static bundle + PWA)
 
-## State (code green as of 2026-06-05: tsc · lint · 108 tests · build + PWA)
+## State (code green as of 2026-06-06: tsc · lint · 108 tests · build + PWA)
 
 Done and working:
 - Welcome screen → wizard → connect (folder **or** GitHub) → 3-pane shell (Org / Chat
@@ -123,6 +123,10 @@ Done and working:
 - Settings dialog; language-change warning; custom keyboard-accessible Select
   (portalled). Settings-side source management (shared `SourceConnect`) +
   "Disconnect & reset". Constellation brand mark (favicon · welcome · topbar).
+- **Drag-to-resize columns** (`app/usePaneSizing.ts`): handles on the Org|Chat and
+  Chat|Workspace boundaries drive the `--org-w` / `--chat-w` vars (workspace is the
+  flexible rest); widths clamp + persist per device in localStorage (never in the
+  org), and disable below 1100px. Vanilla, no library.
 - **GitHub read+write**: `GitHubAdapter`, token encrypted, wizard connect UI. Engine
   e2e over a mocked GitHub (`agent/github-session.test.ts`).
 
@@ -134,8 +138,22 @@ light: `parties` is a single counterpart and a `signal` is one observed value wi
 the trajectory in prose — full multi-party + time-series are later.
 
 Pending follow-up (needs you):
+- **Left pane → three tabs** (agreed, not built): `Org/` (the structure — current
+  `FilesPane`) · `Sources` (the uploaded documents in `sources/`; clicking one opens
+  it in the workspace, like a contract — extend `Selection` with `kind:'source'`) ·
+  `Capabilities` (the verbs on the model: **Map** [the chat, always on] · **Improve**
+  · **Review** · **Analyse** [soon]). Improve/Review move out of the Org header into
+  this tab.
+- **Doc → markdown transcription** (the big piece): every uploaded document — incl.
+  large PDFs — becomes a markdown **source** with frontmatter. Office is already
+  extracted (`ui/extractOffice.ts`); PDFs via `pdf.js` (text layer), with the **LLM
+  over the Files API** as the fallback for scanned/complex PDFs (chunk big ones).
+  **Not** gated per-doc (would mean one diff card per file) — logged to `log.md` and
+  shown in `Sources`. Makes sources first-class, owned (markdown, not opaque
+  `file_id`s), and the inline `(source-id)` citations tangible.
 - **Analysis capability** (`canon/ANALYSIS.md`) — designed, not built; open product
-  questions (granularity, output form, cadence) await alignment.
+  questions (granularity, output form, cadence) await alignment. Good fit for the
+  fan-out-and-synthesize + adversarial-verify workflow patterns.
 - **Re-enable adaptive thinking, properly** — currently OFF (see the harness note).
   To turn it back on, store the **raw** thinking blocks the API returns and send them
   back byte-for-byte (don't re-serialize through our typed blocks), or the API 400s.
@@ -143,8 +161,8 @@ Pending follow-up (needs you):
   Data API: blobs → tree → commit) would be tidier. Not needed to ship.
 - **Live use** — a first real-key browser pass (early June) surfaced and fixed: a
   thinking 400, contracts written as flowing prose (now a titled legal document), and
-  cramped columns (chat + file given more room). Ongoing real-key use is the remaining
-  check; the native folder/file pickers are OS dialogs (not automatable), so the
+  cramped/over-fixed columns (now drag-to-resize, with a fix so the chat reflows when
+  narrowed). Ongoing real-key use is the remaining check; the native folder/file pickers are OS dialogs (not automatable), so the
   engine stays covered deterministically.
 
 ## Docs map
